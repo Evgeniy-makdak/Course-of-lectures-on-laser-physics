@@ -1,0 +1,23 @@
+# Assets
+
+- FIG ch2_threshold: ch2_s11_1.png — График пороговой плотности энергии для стали, титана и алюминия
+- FIG ch3_spontaneous: ch3_spontaneous.png — Спонтанные переходы между уровнями E₂ и E₁
+- FIG ch3_avalanche: ch3_avalanche.png — Фотонная лавина: вынужденное излучение и умножение фотонов
+- FIG ch3_inversion_prob: ch3_inversion_prob.png — Равенство вероятностей вынужденных переходов Ω₁₂ = Ω₂₁
+- FIG ch3_ruby: ch3_ruby.png — Трёхуровневая схема рубинового лазера (ионы Cr³⁺)
+- FIG ch3_pump: ch3_pump.png — Эллиптический отражатель: лампа накачки и рубиновый стержень
+- FIG ch3_resonator: ch3_resonator.png — Оптический резонатор рубинового лазера
+- FIG ch1_atom: ch1_atom.png — Эволюция моделей атома и квантовые числа орбиталей
+- FIG ch1_pauli: ch1_pauli.png — Принцип Паули и заполнение оболочек: N_max = 2n²
+- FIG ch1_sodium: ch1_sodium.png — Пример: переходы в атоме натрия на языке орбиталей и уровней
+- FIG ch1_two_schemes: ch1_two_schemes.png — Две схемы: орбитали (пространство) и уровни энергии
+- FIG ch1_points: ch1_points.png — Точки на линиях E₁, E₂ — частицы-излучатели, а не электроны
+- FIG ch1_not_always: ch1_not_always.png — Переход E₂→E₁ не всегда означает смену орбитали
+- FIG ch4_energy: ch4_energy.png — Энергия фотона и длина волны: 1070 нм и 355 нм
+- FIG ch4_spectrum: ch4_spectrum.png — Шкала электромагнитных излучений и технологические маркеры лазеров
+- FIG ch4_mechanisms: ch4_mechanisms.png — Два механизма: фотохимический (УФ) и тепловой (ИК)
+- FIG ch4_absorption: ch4_absorption.png — Качественные кривые спектральной поглощательной способности A(λ)
+- FIG ch4_choice: ch4_choice.png — Практические критерии выбора лазера и стратегии для алюминия
+- TAB ch3_laser_compare: Сравнение волоконного, диодного и CO₂-лазеров для аддитивных технологий
+- TAB ch1_quantum: Квантовые числа электрона в атоме
+- TAB ch4_absorption: Оценки поглощательной способности металлов на ключевых длинах волн
