@@ -960,48 +960,48 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
         "CoverAuthor", parent=styles["Normal"], fontName=font, fontSize=12,
         leading=16, alignment=TA_CENTER, spaceAfter=14, textColor=HexColor("#222222"),
     )
-    story.append(Paragraph(esc("ФИЗИКА ЛАЗЕРОВ ДЛЯ АДДИТИВНЫХ (3D) ТЕХНОЛОГИЙ"), cover))
-    story.append(Paragraph(esc("Методическое пособие по материалам семинарских лекций"), cover_sub))
-    story.append(Paragraph(esc(f"Автор: {AUTHOR}"), cover_author))
+    story.append(Paragraph(pdf_escape("ФИЗИКА ЛАЗЕРОВ ДЛЯ АДДИТИВНЫХ (3D) ТЕХНОЛОГИЙ"), cover))
+    story.append(Paragraph(pdf_escape("Методическое пособие по материалам семинарских лекций"), cover_sub))
+    story.append(Paragraph(pdf_escape(f"Автор: {AUTHOR}"), cover_author))
     story.append(Spacer(1, 0.3 * cm))
     story.append(Paragraph(
-        esc("Для студентов и инженеров, осваивающих лазерные процессы в технологиях послойного синтеза"),
+        pdf_escape("Для студентов и инженеров, осваивающих лазерные процессы в технологиях послойного синтеза"),
         cover_sub,
     ))
     story.append(PageBreak())
 
-    story.append(Paragraph(esc("Предисловие"), h1))
+    story.append(Paragraph(pdf_escape("Предисловие"), h1))
     for p in preface:
-        story.append(Paragraph(esc(p), body))
+        story.append(Paragraph(pdf_escape(p), body))
     story.append(PageBreak())
 
-    story.append(Paragraph(esc("Содержание"), h1))
+    story.append(Paragraph(pdf_escape("Содержание"), h1))
     for ch in chapters:
-        story.append(Paragraph(esc(f"Глава {ch['number']}. {ch['title']}"), toc))
-        story.append(Paragraph(esc(ch["subtitle"]), note))
+        story.append(Paragraph(pdf_escape(f"Глава {ch['number']}. {ch['title']}"), toc))
+        story.append(Paragraph(pdf_escape(ch["subtitle"]), note))
         for sec in ch["sections"]:
-            story.append(Paragraph(esc(sec["title"]), toc_sec))
-    story.append(Paragraph(esc("Приложение. Краткий глоссарий обозначений"), toc))
+            story.append(Paragraph(pdf_escape(sec["title"]), toc_sec))
+    story.append(Paragraph(pdf_escape("Приложение. Краткий глоссарий обозначений"), toc))
     story.append(PageBreak())
 
     for ch in chapters:
-        story.append(Paragraph(esc(f"Глава {ch['number']}. {ch['title']}"), h1))
-        story.append(Paragraph(esc(ch["subtitle"]), note))
+        story.append(Paragraph(pdf_escape(f"Глава {ch['number']}. {ch['title']}"), h1))
+        story.append(Paragraph(pdf_escape(ch["subtitle"]), note))
         for sec in ch["sections"]:
-            story.append(Paragraph(esc(sec["title"]), h2))
+            story.append(Paragraph(pdf_escape(sec["title"]), h2))
             for block in sec["blocks"]:
                 if block["type"] == "text":
-                    story.append(Paragraph(esc(block["text"]), body))
+                    story.append(Paragraph(pdf_escape(block["text"]), body))
                 elif block["type"] == "figure" and block["path"].exists():
                     img = RLImage(str(block["path"]), width=14 * cm, height=9.5 * cm, kind="proportional")
                     story.append(Spacer(1, 6))
                     story.append(img)
-                    story.append(Paragraph(esc(block["caption"]), note))
+                    story.append(Paragraph(pdf_escape(block["caption"]), note))
                 elif block["type"] == "table":
-                    story.append(Paragraph(esc(block["caption"]), note))
-                    data = [[Paragraph(esc(h), cell_h) for h in block["headers"]]]
+                    story.append(Paragraph(pdf_escape(block["caption"]), note))
+                    data = [[Paragraph(pdf_escape(h), cell_h) for h in block["headers"]]]
                     for row in block["rows"]:
-                        data.append([Paragraph(esc(c), cell) for c in row])
+                        data.append([Paragraph(pdf_escape(c), cell) for c in row])
                     col_w = 16.5 * cm / max(1, len(block["headers"]))
                     tbl = Table(data, colWidths=[col_w] * len(block["headers"]))
                     tbl.setStyle(TableStyle([
@@ -1017,14 +1017,14 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
                     story.append(Spacer(1, 8))
         story.append(PageBreak())
 
-    story.append(Paragraph(esc("Приложение. Краткий глоссарий обозначений"), h1))
+    story.append(Paragraph(pdf_escape("Приложение. Краткий глоссарий обозначений"), h1))
     story.append(Paragraph(
-        esc("Глоссарий составлен по материалам главы о природе света и сохранён как справочник обозначений для всего курса."),
+        pdf_escape("Глоссарий составлен по материалам главы о природе света и сохранён как справочник обозначений для всего курса."),
         note,
     ))
     for g in glossary:
         if len(g) >= 3:
-            story.append(Paragraph(esc(g), body0))
+            story.append(Paragraph(pdf_escape(g), body0))
 
     def _page(canvas, doc_):
         canvas.saveState()
