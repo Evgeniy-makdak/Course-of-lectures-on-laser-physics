@@ -43,6 +43,9 @@ ASSETS = OUT_DIR / "assets"
 # Версия для студентов (только уже прочитанные главы)
 STUDENT_DIR = ROOT / "Методичка"
 STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
+STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
+# ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
+DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-3.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -1091,6 +1094,14 @@ def main():
     # Версия для студентов: без глав, которые ещё не читались (сейчас — без гл. 4)
     student_chapters = [ch for ch in chapters if ch["number"] < 4]
     build_pdf(student_chapters, preface, glossary, STUDENT_PDF_PATH)
+    build_docx(student_chapters, preface, glossary, STUDENT_DOCX_PATH)
+    # Копия на Рабочий стол с латинским именем (удобно для Яндекс Документов)
+    try:
+        import shutil
+        shutil.copy2(STUDENT_DOCX_PATH, DESKTOP_STUDENT_DOCX)
+        print(f"OK DESKTOP DOCX: {DESKTOP_STUDENT_DOCX}")
+    except Exception as e:
+        print(f"WARN desktop copy: {e}")
     write_readme(chapters)
     print("DONE")
 
