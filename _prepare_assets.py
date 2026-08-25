@@ -134,7 +134,7 @@ def prepare_all() -> dict:
         ("ch4_spectrum", m4.draw_em_spectrum_pil,
          "Шкала электромагнитных излучений и технологические маркеры лазеров"),
         ("ch4_mechanisms", m4.draw_two_mechanisms_pil,
-         "Два механизма: слева — барьер E_акт вдоль координаты реакции (УФ); справа — T(t) и T_пл (ИК)"),
+         "Два механизма: слева — барьер E_акт и шкала энергии одного УФ-фотона E_ph; справа — T(t) и T_пл (ИК)"),
         ("ch4_absorption", m4.draw_absorption_scenarios_pil,
          "A(λ) и четыре сценария: лазер → материал → результат"),
         ("ch4_choice", m4.draw_laser_choice_pil,
