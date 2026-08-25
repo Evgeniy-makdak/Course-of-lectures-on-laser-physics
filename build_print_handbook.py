@@ -617,6 +617,7 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
             p = p.replace("Выбирая λ (длину волны), вы задаёте", "Выбор λ (длины волны) задаёт")
             p = p.replace("Выбирая λ, вы задаёте", "Выбор λ задаёт")
             p = p.replace("Регулятором мощности меняется", "Регулятором мощности изменяют")
+            p = p.replace("На доске: E = h·c/λ", "На рисунке и в формулах главы: E = h·c/λ")
             # Russianize residual English process jargon
             p = p.replace("lack of fusion", "несплавление")
             p = p.replace("keyhole-поры", "поры режима глубокого проплавления")
