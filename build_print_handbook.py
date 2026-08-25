@@ -104,8 +104,7 @@ INLINE_HOLD_RE = re.compile(
     re.I,
 )
 BOARD_CLOSING_RE = re.compile(
-    r"^(?:Сейчас на доске|На доске (?:нарисуем|зафиксируем|запишем)|Запишем на доске|"
-    r"Посмотрите на этот график)\b.*",
+    r"^(?:Сейчас на доске|На доске)\b.*",
     re.I,
 )
 
@@ -560,6 +559,7 @@ def load_lecture2_sections() -> list[tuple[str, list[str]]]:
 
 
 def load_lecture4_sections() -> list[tuple[str, list[str]]]:
+    """Глава 4: книжный стиль для читателя (не раскадровка лектора)."""
     script = load_script(ROOT / "Lecture-4-main" / "build_lecture_4.py")
     sections = paragraphs_from_script_items(script)
     adapted = []
@@ -568,10 +568,16 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
         for p in paras:
             p = p.replace(
                 "Мы продолжаем курс. На прошлых занятиях разобрали двойственную природу света и устройство лазера: за счёт чего излучение становится когерентным, направленным и узкополосным.",
-                "В предыдущих главах мы разобрали строение атома, двойственную природу света и устройство лазера: за счёт чего излучение становится когерентным, направленным и узкополосным.",
+                "В предыдущих главах разобраны строение атома, двойственная природа света и устройство лазера: за счёт чего излучение становится когерентным, направленным и узкополосным.",
+            )
+            p = p.replace(
+                "Сегодня — переход от физики источника к технологическому решению:",
+                "Эта глава — переход от физики источника к технологическому решению:",
             )
             p = p.replace("Тема лекции:", "Тема главы:")
             p = p.replace("План — пять связанных шагов.", "План главы — пять связанных шагов.")
+            p = p.replace("Это центр лекции:", "Это центр главы:")
+            p = p.replace("Центральный раздел лекции.", "Центральный раздел главы.")
             p = p.replace(
                 "селективного лазерного плавления.",
                 "селективного лазерного плавления (далее — СЛП).",
@@ -582,6 +588,33 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
                 "Бонусный вопрос связывает сегодняшнюю тему с фокусировкой, которой займёмся дальше.",
                 "Бонусный вопрос связывает тему этой главы с фокусировкой пучка — следующей логической темой курса.",
             )
+            # Раскадровка → книга: обращение к слайду / доске / «вы»
+            p = p.replace(
+                "Обратимся к схеме на слайде. На левой панели показан",
+                "На приведённом рисунке слева показан",
+            )
+            p = p.replace("На правой панели —", "На правой части того же рисунка —")
+            p = p.replace(
+                "это и показано правой панелью схемы как пересечение T(t) и T_пл.",
+                "это соответствует пересечению кривой T(t) и изотермы T_пл на правой части рисунка.",
+            )
+            p = p.replace(
+                "На схеме слева — барьерный профиль и один УФ-фотон; справа — T(t) от потока ИК-фотонов.",
+                "На рисунке слева — барьерный профиль и один УФ-фотон; справа — T(t) от потока ИК-фотонов.",
+            )
+            p = p.replace("Связь со слайдом механизмов.", "Связь с разделом о двух механизмах.")
+            p = p.replace("мост к следующей лекции", "переход к следующей теме курса")
+            p = p.replace(
+                "На следующей лекции — геометрическая оптика:",
+                "Далее по курсу логично перейти к геометрической оптике:",
+            )
+            p = p.replace(
+                "На следующем занятии разберём её вместе с геометрией пучка.",
+                "Эту цепочку полезно разобрать далее вместе с геометрией пучка.",
+            )
+            p = p.replace("Эти числа — опорные величины всей лекции.", "Эти числа — опорные величины всей главы.")
+            p = p.replace("Выбирая λ, вы задаёте", "Выбор λ задаёт")
+            p = p.replace("Регулятором мощности меняется", "Регулятором мощности изменяют")
             # Russianize residual English process jargon
             p = p.replace("lack of fusion", "несплавление")
             p = p.replace("keyhole-поры", "поры режима глубокого проплавления")
@@ -589,17 +622,11 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
             p = p.replace("print-through", "пропечатывание насквозь")
             p = p.replace("шаг хэтча", "шаг штриховки")
             p = p.replace("green/blue", "зелёный/синий лазер")
-            p = p.replace(
-                "На следующем занятии разберём её вместе с геометрией пучка.",
-                "Эту цепочку полезно разобрать далее вместе с геометрией пучка.",
-            )
-            p = p.replace(
-                "На следующей лекции перейдём к геометрической оптике",
-                "Далее по курсу логично перейти к геометрической оптике",
-            )
-            p = p.replace("якорь всей лекции", "якорь всей главы")
-            p = p.replace("Центральный раздел лекции", "Центральный раздел главы")
-            ap.append(p)
+            # Убрать остатки устной подачи
+            p = p.replace("Формулировка для экзамена и практики: ", "")
+            p = p.replace("Проверочный порядок вопросов", "Удобный порядок вопросов")
+            if p.strip():
+                ap.append(p)
         adapted.append((title, ap))
     return normalize_sections(adapted)
 
@@ -669,7 +696,7 @@ def attach_media(chapters, catalog):
             (("ЧАСТОТА", "ЭНЕРГИЯ ФОТОНА", "ДЛИНА ВОЛНЫ И ЭНЕРГИЯ"), ["ch4_energy"]),
             (("ШКАЛА",), ["ch4_spectrum"]),
             (("ДВА МЕХАНИЗМА", "ФОТОХИМИЧ"), ["ch4_mechanisms"]),
-            (("ПОГЛОЩАТЕЛЬН", "СПЕКТРАЛЬН"), ["ch4_absorption", "tab:ch4_absorption"]),
+            (("ПОГЛОЩАТЕЛЬН", "СПЕКТРАЛЬН"), ["ch4_absorption"]),
             (("КРИТЕРИИ", "ВЫБОР ЛАЗЕРА"), ["ch4_choice"]),
         ],
     }
@@ -788,8 +815,14 @@ def add_figure_docx(doc, path: Path, caption: str):
     p.paragraph_format.space_before = Pt(8)
     p.paragraph_format.space_after = Pt(4)
     run = p.add_run()
-    # width ~14 cm
-    run.add_picture(str(path), width=Cm(14.0))
+    try:
+        from PIL import Image as PILImage
+        with PILImage.open(path) as im:
+            w_px, h_px = im.size
+    except Exception:
+        w_px, h_px = 1000, 700
+    width_cm = 16.0 if w_px >= 900 else 14.0
+    run.add_picture(str(path), width=Cm(width_cm))
     cap = doc.add_paragraph()
     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
     cap.paragraph_format.space_after = Pt(10)
@@ -996,7 +1029,22 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
                 if block["type"] == "text":
                     story.append(Paragraph(pdf_escape(block["text"]), body))
                 elif block["type"] == "figure" and block["path"].exists():
-                    img = RLImage(str(block["path"]), width=14 * cm, height=9.5 * cm, kind="proportional")
+                    # Сохраняем пропорции; широкие схемы — на всю ширину полосы набора
+                    try:
+                        from PIL import Image as PILImage
+                        with PILImage.open(block["path"]) as im:
+                            w_px, h_px = im.size
+                    except Exception:
+                        w_px, h_px = 1000, 700
+                    max_w = 16.5 * cm if w_px >= 900 else 14 * cm
+                    aspect = h_px / max(1, w_px)
+                    img_w = max_w
+                    img_h = img_w * aspect
+                    max_h = 21 * cm
+                    if img_h > max_h:
+                        img_h = max_h
+                        img_w = img_h / aspect
+                    img = RLImage(str(block["path"]), width=img_w, height=img_h)
                     story.append(Spacer(1, 6))
                     story.append(img)
                     story.append(Paragraph(pdf_escape(block["caption"]), note))
@@ -1005,8 +1053,13 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
                     data = [[Paragraph(pdf_escape(h), cell_h) for h in block["headers"]]]
                     for row in block["rows"]:
                         data.append([Paragraph(pdf_escape(c), cell) for c in row])
-                    col_w = 16.5 * cm / max(1, len(block["headers"]))
-                    tbl = Table(data, colWidths=[col_w] * len(block["headers"]))
+                    n_cols = max(1, len(block["headers"]))
+                    if n_cols == 6:
+                        # Сценарии A(λ): узкие №/A, широкие «что/почему»
+                        col_ws = [0.9 * cm, 2.9 * cm, 2.1 * cm, 2.2 * cm, 4.2 * cm, 4.2 * cm]
+                    else:
+                        col_ws = [16.5 * cm / n_cols] * n_cols
+                    tbl = Table(data, colWidths=col_ws)
                     tbl.setStyle(TableStyle([
                         ("BACKGROUND", (0, 0), (-1, 0), HexColor("#e8eef2")),
                         ("GRID", (0, 0), (-1, -1), 0.4, HexColor("#666666")),
