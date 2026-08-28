@@ -46,9 +46,8 @@ STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров
 STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 # ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
 DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-5.docx"
-# Копии в корне репозитория (для GitHub / Яндекс Документы)
-REPO_STUDENT_DOCX_5 = OUT_DIR / "Metodichka_lectures_1-5.docx"
-REPO_STUDENT_DOCX_LEGACY = OUT_DIR / "Metodichka_lectures_1-3.docx"  # то же содержание, старое имя
+# Копия в корне репозитория (для GitHub / Яндекс Документы)
+REPO_STUDENT_DOCX = OUT_DIR / "Metodichka_lectures_1-5.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -1333,8 +1332,7 @@ def write_readme(chapters):
         "",
         f"- `{DOCX_PATH.name}`",
         f"- `{PDF_PATH.name}`",
-        f"- `{REPO_STUDENT_DOCX_5.name}` — Word для Яндекс Документов (главы 1–5, = PDF)",
-        f"- `{REPO_STUDENT_DOCX_LEGACY.name}` — то же содержание (устаревшее имя файла)",
+        f"- `{REPO_STUDENT_DOCX.name}` — Word для Яндекс Документов (главы 1–5, = PDF)",
         "- `assets/` — рисунки и схемы",
         "",
         "## Главы",
@@ -1376,11 +1374,9 @@ def main():
     # Копии с латинским именем — репозиторий и Рабочий стол (тот же текст, что PDF/DOCX)
     try:
         import shutil
-        shutil.copy2(STUDENT_DOCX_PATH, REPO_STUDENT_DOCX_5)
-        shutil.copy2(STUDENT_DOCX_PATH, REPO_STUDENT_DOCX_LEGACY)
+        shutil.copy2(STUDENT_DOCX_PATH, REPO_STUDENT_DOCX)
         shutil.copy2(STUDENT_DOCX_PATH, DESKTOP_STUDENT_DOCX)
-        print(f"OK REPO DOCX: {REPO_STUDENT_DOCX_5}")
-        print(f"OK REPO DOCX (legacy): {REPO_STUDENT_DOCX_LEGACY}")
+        print(f"OK REPO DOCX: {REPO_STUDENT_DOCX}")
         print(f"OK DESKTOP DOCX: {DESKTOP_STUDENT_DOCX}")
     except Exception as e:
         print(f"WARN student docx copies: {e}")
