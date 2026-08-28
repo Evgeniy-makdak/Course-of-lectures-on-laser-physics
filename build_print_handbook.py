@@ -40,12 +40,12 @@ OUT_DIR = Path(__file__).resolve().parent
 DOCX_PATH = OUT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 PDF_PATH = OUT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 ASSETS = OUT_DIR / "assets"
-# Версия для студентов (только уже прочитанные главы)
+# Распространяемая версия (лекции 1–4) — папка «Методичка» и копия на Рабочий стол
 STUDENT_DIR = ROOT / "Методичка"
 STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 # ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
-DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-3.docx"
+DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-4.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -62,6 +62,26 @@ PREFACE = [
         "Методичка предназначена для самостоятельной работы студентов и инженеров аддитивных "
         "технологий как печатное сопровождение курса и будет дополняться после каждой новой прочитанной лекции."
     ),
+]
+
+# Дополнение к глоссарию из лекции 4 (термины, отсутствующие в раскадровке лекции 1)
+GLOSSARY_CH4 = [
+    "A(λ)\tСпектральная поглощательная способность — безразмерная доля падающей мощности, вошедшей в материал (0…1); A(λ) = P_погл / P_пад. Не путать с работой выхода металла",
+    "СЛП\tСелективное лазерное плавление — послойное сплавление металлического порошка лазером (см. SLM)",
+    "P/v\tЛинейная энергия — отношение мощности лазера к скорости сканирования; основной параметр режима СЛП",
+    "M²\tПараметр качества пучка; M² ≈ 1 соответствует идеальной гауссовой моде TEM₀₀",
+    "Фотоинициатор\tДобавка в фотополимер, поглощающая УФ и распадающаяся на радикалы, запускающие полимеризацию",
+    "E_акт\tЭнергия активации — минимальный энергетический барьер химической реакции",
+    "E (энергия фотона)\tE = h·ν = h·c/λ; в электрон-вольтах: E(эВ) ≈ 1240 / λ(нм)",
+    "CO₂-лазер\tГазовый лазер с λ ≈ 10,6 мкм; эффективен для органики и ряда неметаллов",
+    "Доза\tЭнергия излучения на единицу площади (экспозиция); ключевой параметр стереолитографии",
+    "T_пл\tТемпература плавления материала",
+    "Фотохимический механизм\tВзаимодействие, при котором один фотон достаточен для химического акта (E_ph ≥ порога)",
+    "Тепловой механизм\tНакопление энергии многих фотонов в нагрев; типичен для СЛП металлов в ближнем ИК",
+    "Стереолитография\tПослойная полимеризация жидкой смолы УФ-лазером (см. SLA)",
+    "Режим глубокого проплавления\tПерегретая ванна расплава с удлинённым каналом; риск пор при избыточной плотности мощности",
+    "Ближний ИК\tИК-диапазон около 1 мкм (волоконные лазеры ~1070 нм); основное окно СЛП металлов",
+    "Дальний ИК\tИК-диапазон десятков микрометров (CO₂ ~10,6 мкм); эффективен для многих неметаллов",
 ]
 
 
@@ -263,6 +283,8 @@ def paragraphs_from_script_items(script) -> list[tuple[str, list[str]]]:
     sections = []
     for item in script:
         title = clean_heading(item[0])
+        if "БОНУС" in title.upper():
+            continue
         paras = [cp for p in item[2] if (cp := clean_paragraph(p))]
         if paras:
             sections.append((title, paras))
@@ -276,7 +298,7 @@ def normalize_sections(sections: list[tuple[str, list[str]]]) -> list[tuple[str,
     out = []
     for title, paras in sections:
         key = title.upper()
-        if "ГОЛОСА ФИЗИКИ" in key:
+        if "ГОЛОСА ФИЗИКИ" in key or "БОНУС" in key:
             continue
         out.append((title, paras))
     if not out:
@@ -583,11 +605,7 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
                 "селективного лазерного плавления (далее — СЛП).",
                 1,
             )
-            p = p.replace("вопрос на следующее занятие", "вопрос для самостоятельной проработки")
-            p = p.replace(
-                "Бонусный вопрос связывает сегодняшнюю тему с фокусировкой, которой займёмся дальше.",
-                "Бонусный вопрос связывает тему этой главы с фокусировкой пучка — следующей логической темой курса.",
-            )
+            p = p.replace("вопрос на следующее занятие", "переход к следующей теме курса")
             # Раскадровка → книга: обращение к слайду / доске / «вы»
             p = p.replace(
                 "Центральный раздел лекции — два механизма",
@@ -775,6 +793,7 @@ def build_book_model(catalog):
         },
     ]
     rich = attach_media(chapters, catalog)
+    glossary = list(glossary) + GLOSSARY_CH4
     return rich, list(PREFACE), glossary
 
 
@@ -1148,13 +1167,12 @@ def main():
     print(f"Chapters={len(chapters)}; figures={n_fig}; tables={n_tab}")
     for ch in chapters:
         print(f"  Ch{ch['number']}: {len(ch['sections'])} sections — first={ch['sections'][0]['title']}; last={ch['sections'][-1]['title']}")
-    # Полная версия (все главы, включая ещё не прочитанные)
+    # Полная версия (лекции 1–4) — исходники в Lectures_for_print
     build_docx(chapters, preface, glossary, DOCX_PATH)
     build_pdf(chapters, preface, glossary, PDF_PATH)
-    # Версия для студентов: без глав, которые ещё не читались (сейчас — без гл. 4)
-    student_chapters = [ch for ch in chapters if ch["number"] < 4]
-    build_pdf(student_chapters, preface, glossary, STUDENT_PDF_PATH)
-    build_docx(student_chapters, preface, glossary, STUDENT_DOCX_PATH)
+    # Та же полная версия — в папку «Методичка» для раздачи (PDF + Word)
+    build_pdf(chapters, preface, glossary, STUDENT_PDF_PATH)
+    build_docx(chapters, preface, glossary, STUDENT_DOCX_PATH)
     # Копия на Рабочий стол с латинским именем (удобно для Яндекс Документов)
     try:
         import shutil
