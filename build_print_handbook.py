@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Сборка печатной методички по 4 лекциям курса.
-Порядок глав: бывшая Лекция 3 → 1; Лекция 1 → 2; Лекция 2 → 3; Лекция 4 → 4.
+Сборка печатной методички по 5 лекциям курса.
+Порядок глав: бывшая Лекция 3 → 1; Лекция 1 → 2; Лекция 2 → 3; Лекция 4 → 4; Лекция 5 → 5.
 Текст = раскадровки без спикерских ремарок; со схемами, рисунками и таблицами.
 """
 from __future__ import annotations
@@ -40,12 +40,12 @@ OUT_DIR = Path(__file__).resolve().parent
 DOCX_PATH = OUT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 PDF_PATH = OUT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 ASSETS = OUT_DIR / "assets"
-# Распространяемая версия (лекции 1–4) — папка «Методичка» и копия на Рабочий стол
+# Распространяемая версия (лекции 1–5) — папка «Методичка» и копия на Рабочий стол
 STUDENT_DIR = ROOT / "Методичка"
 STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 # ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
-DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-4.docx"
+DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-5.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -83,6 +83,82 @@ GLOSSARY_CH4 = [
     "Ближний ИК\tИК-диапазон около 1 мкм (волоконные лазеры ~1070 нм); основное окно СЛП металлов",
     "Дальний ИК\tИК-диапазон десятков микрометров (CO₂ ~10,6 мкм); эффективен для многих неметаллов",
 ]
+
+# Дополнение к глоссарию из лекции 5 (геометрическая оптика)
+GLOSSARY_CH5 = [
+    "I\tПлотность мощности (интенсивность): I = P/S, Вт/см²",
+    "P\tМощность лазера, Вт",
+    "S\tПлощадь лазерного пятна, см²",
+    "d\tДиаметр пятна в фокусе, мкм",
+    "d_идеал\tИдеальный (дифракционный) диаметр пятна: d ≈ λ/NA",
+    "d_реал\tРеальный диаметр пятна с учётом качества пучка: d_реал = M²·d_идеал",
+    "NA\tЧисловая апертура — мера ширины конуса сходящихся лучей; NA = n·sin θ",
+    "DOF\tГлубина резкости (Depth of Focus) — диапазон вдоль оси луча, где d ≈ const",
+    "n\tПоказатель преломления среды: n = c/v",
+    "Δn\tРазность показателей преломления на границе двух сред",
+    "θ\tПоловина угла схождения конуса лучей в фокусе",
+    "F-theta\tТелецентрическая (эф-тета) линза: круглое пятно по всему полю сканирования",
+]
+
+# Повторяющиеся подсказки спикера в скобках — убираем в методичке (определение даётся один раз)
+_HANDBOOK_GLOSS_RE = re.compile(
+    r"\s*\("
+    r"(?:"
+    r"интенсивность(?:,\s*плотность мощности)?|интенсивности|"
+    r"диаметр(?:\s+пятна)?|реальный диаметр|идеальный диаметр|"
+    r"мощность|площадь|"
+    r"глубина резкости|глубины резкости|"
+    r"числов(?:ая|ой|ую)\s+аперт(?:ура|уре|урой|уру)(?:\s+в квадрате)?|"
+    r"длина волны|"
+    r"параметр качества пучка|параметр «эм-квадрат»|"
+    r"показателем преломления|"
+    r"показатель преломления первой среды|показатель преломления второй среды"
+    r")\)",
+    re.I,
+)
+
+
+
+
+def dedupe_handbook_terminology(sections: list[tuple[str, list[str]]]) -> list[tuple[str, list[str]]]:
+    """Оставить 1–2 пояснения термина в главе; дальше — только символ."""
+    na_long = 0
+    out = []
+    for title, paras in sections:
+        new_paras = []
+        for para in paras:
+            p = para
+            if re.search(r"NA\s*—\s*числовая апертура", p, re.I):
+                na_long += 1
+                if na_long > 2:
+                    p = re.sub(r"NA\s*—\s*числовая апертура", "NA", p, flags=re.I)
+            p = re.sub(
+                r"обратно пропорционален\s+числов(?:ой|ую)\s+аперт(?:уре|уру)",
+                "обратно пропорционален NA",
+                p,
+                flags=re.I,
+            )
+            p = re.sub(
+                r"NA\s*\([^)]*числов[^)]*аперт[^)]*\)",
+                "NA",
+                p,
+                flags=re.I,
+            )
+            p = re.sub(
+                r"выбирает NA\s*\([^)]*числов[^)]*\)",
+                "выбирает NA",
+                p,
+                flags=re.I,
+            )
+            new_paras.append(re.sub(r"\s+", " ", p).strip())
+        out.append((title, new_paras))
+    return out
+
+def strip_handbook_glosses(text: str) -> str:
+    """Убрать повторные расшифровки переменных в скобках (для печатной методички)."""
+    t = _HANDBOOK_GLOSS_RE.sub("", text)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
 
 
 # ── fonts / helpers ────────────────────────────────────────────────────────
@@ -174,12 +250,20 @@ def typography_fix(text: str) -> str:
         t,
     )
 
-    # 10^-15 / 10^−15 / 10^{ -15 }
+    # 10^-15 / 10^−15 / 10^{ -15 } and 6,25·10^-6
+    t = re.sub(r"(\d+(?:,\d+)?)·10\^\s*\{?\s*(−|-)?\s*(\d+)\s*\}?",
+               lambda m: m.group(1) + "·10" + _to_super(("-" if m.group(2) else "") + m.group(3)), t)
     t = re.sub(r"10\^\s*\{?\s*(−|-)?\s*(\d+)\s*\}?",
                lambda m: "10" + _to_super(("-" if m.group(1) else "") + m.group(2)), t)
-    # letter^number (n^2, Z^2, v^2, r^2, including 2n^2)
+    # (d/2)^2, (0,05)^2, (0,0025)^2
+    t = re.sub(r"\(([^()]+)\)\^\s*\{?\s*(−|-)?\s*(\d+)\s*\}?",
+               lambda m: "(" + m.group(1) + ")" + _to_super(("-" if m.group(2) else "") + m.group(3)), t)
+    # letter^number (n^2, r^2, NA^2, …)
     t = re.sub(r"([A-Za-z])\^\s*\{?\s*(−|-)?\s*(\d+)\s*\}?",
                lambda m: m.group(1) + _to_super(("-" if m.group(2) else "") + m.group(3)), t)
+    # any remaining ^N (fallback)
+    t = re.sub(r"\^\s*\{?\s*(−|-)?\s*(\d+)\s*\}?",
+               lambda m: _to_super(("-" if m.group(1) else "") + m.group(2)), t)
     t = re.sub(r"\b2n2\b", "2n²", t)
     t = re.sub(r"\b2N2\b", "2N²", t)
 
@@ -208,6 +292,23 @@ def typography_fix(text: str) -> str:
     t = t.replace("h*ν", "h·ν")
     t = re.sub(r"(?<![A-Za-zА-Яа-я])nu(?![A-Za-zА-Яа-я])", "ν", t)
 
+    # Lecture 5: pi, lambda, Delta n, M2, unit powers, angles
+    t = re.sub(r"(?<![A-Za-zА-Яа-я])pi(?![A-Za-zА-Яа-я])", "π", t)
+    t = re.sub(r"(?<![A-Za-zА-Яа-я])lambda(?![A-Za-zА-Яа-я])", "λ", t, flags=re.I)
+    t = re.sub(r"\btheta(\d+)\b", lambda m: "θ" + _to_sub(m.group(1)), t, flags=re.I)
+    t = re.sub(r"(?<![A-Za-z-])theta\b", "θ", t, flags=re.I)
+    t = re.sub(r"\bn([12])\b", lambda m: "n" + _to_sub(m.group(1)), t)
+    t = re.sub(r"\bDelta\s+n\b", "Δn", t)
+    t = re.sub(r"\bM2\b", "M²", t)
+    t = re.sub(r"\bNA2\b", "NA²", t)
+    t = re.sub(r"см2\b", "см²", t)
+    t = re.sub(r"мм2\b", "мм²", t)
+    t = re.sub(r"/см2\b", "/см²", t)
+
+    # пробелы после верхних индексов перед знаками и единицами
+    t = re.sub(r"([²³⁴⁵⁶⁷⁸⁹⁰⁻⁺⁼⁽⁾ⁿ]+)([=≈])", r"\1 \2", t)
+    t = re.sub(r"([²³⁴⁵⁶⁷⁸⁹⁰⁻⁺])([А-Яа-я])", r"\1 \2", t)
+
     # Delta E written as dE in formulas
     t = re.sub(r"(?<![A-Za-z])dE(?![A-Za-z])", "ΔE", t)
     t = t.replace("Delta E", "ΔE").replace("DeltaE", "ΔE")
@@ -223,6 +324,8 @@ def clean_heading(text: str) -> str:
     t = re.sub(r"^СЛАЙД\s+\d+\s*[-–—.:)]\s*", "", t, flags=re.I)
     t = INLINE_TIMING_RE.sub("", t)
     t = INLINE_HOLD_RE.sub("", t)
+    # Ремарки раскадровки в заголовках (на доске, для лектора) — не для методички
+    t = re.sub(r"\s*\([^)]*на\s+доске[^)]*\)", "", t, flags=re.I)
     # drop old numbering variants: "2.", "2 -", "2 —", "13 - ИТОГИ"
     t = re.sub(r"^\d+\s*[-–—.:)]\s*", "", t)
     t = re.sub(r"\s+", " ", t).strip(" |–-")
@@ -656,6 +759,84 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
     return normalize_sections(adapted)
 
 
+def load_lecture5_sections() -> list[tuple[str, list[str]]]:
+    """Глава 5: геометрическая оптика — книжный стиль, без спикерских подсказок в скобках."""
+    import importlib.util
+
+    py_path = ROOT / "Lecture-5-main" / "build_lecture_5.py"
+    script = load_script(py_path)
+    spec = importlib.util.spec_from_file_location("bl5", py_path)
+    bl5 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bl5)
+    epilogue = getattr(bl5, "EPILOGUE", "")
+
+    sections = paragraphs_from_script_items(script)
+    adapted = []
+    for title, paras in sections:
+        ap = []
+        for p in paras:
+            p = strip_handbook_glosses(p)
+            p = p.replace(
+                "Добрый день. Мы продолжаем курс. В Главе 2 мы выяснили главное:",
+                "В предыдущих главах установлено главное:",
+            )
+            p = p.replace(
+                "Сегодня мы разберём инструмент, которым мы управляем этой плотностью:",
+                "В этой главе разбирается инструмент, которым управляют этой плотностью:",
+            )
+            p = p.replace("Мы ответим на три вопроса:", "Рассматриваются три вопроса:")
+            p = p.replace("План будет таким.", "План главы:")
+            p = p.replace("на примерах с расчётами на доске", "на примерах с расчётами")
+            p = p.replace("вы не можете сделать его 1 мкм на вашем станке", "нельзя получить пятно 1 мкм на типичном СЛП-станке")
+            p = p.replace("Давайте вспомним ключевое понятие", "Напомним ключевое понятие")
+            p = p.replace("Я буду писать расчёты на доске.", "Ниже — расчёты двух сценариев.")
+            p = p.replace("Теперь — два сценария.", "Рассмотрим два сценария.")
+            p = p.replace("Теперь — как линза вообще работает.", "Рассмотрим, как линза работает.")
+            p = p.replace(
+                "Это базовая формула, которую полезно знать, даже если вы не будете её использовать для расчётов.",
+                "Это базовая формула геометрической оптики.",
+            )
+            p = p.replace(
+                "Delta n (разность показателей преломления)",
+                "Δn (разность показателей преломления)",
+            )
+            p = p.replace("Теперь переходим к главному ограничению", "Перейдём к главному ограничению")
+            p = p.replace("lambda (лямбda, λ)", "λ")
+            p = p.replace("lambda (лямбда, λ)", "λ")
+            p = p.replace("Обратите внимание:", "Важно:")
+            p = p.replace("Закономерный вопрос:", "Логичный вопрос:")
+            p = p.replace("Таблица трёх случаев — на слайде и в конспекте.", "Сводка трёх случаев приведена в таблице ниже.")
+            p = p.replace("Итоговые тезисы.", "Итоговые тезисы главы:")
+            p = p.replace(
+                "Связь со следующей лекцией: мы говорили о линзах, как будто свет — идеальные прямые лучи.",
+                "В этой главе линзы рассматривались в приближении геометрической оптики — свет как система прямых лучей.",
+            )
+            p = p.replace(
+                "На следующем занятии («Волновая оптика»)",
+                "В следующей главе («Волновая оптика»)",
+            )
+            if p.strip():
+                ap.append(p)
+        if ap:
+            adapted.append((title, ap))
+
+    if epilogue:
+        ep = strip_handbook_glosses(clean_paragraph(epilogue) or epilogue)
+        ep = ep.replace(
+            "Связь со следующей лекцией: мы говорили о линзах, как будто свет — идеальные прямые лучи.",
+            "В этой главе линзы рассматривались в приближении геометрической оптики — свет как система прямых лучей.",
+        )
+        ep = ep.replace(
+            "На следующем занятии («Волновая оптика»)",
+            "В следующей главе («Волновая оптика»)",
+        )
+        ep = typography_fix(ep)
+        if adapted and adapted[-1][1]:
+            adapted[-1][1].append(ep)
+
+    return normalize_sections(dedupe_handbook_terminology(adapted))
+
+
 # ── attach media ───────────────────────────────────────────────────────────
 
 def _match(title: str, *keys: str) -> bool:
@@ -724,6 +905,13 @@ def attach_media(chapters, catalog):
             (("ПОГЛОЩАТЕЛЬН", "СПЕКТРАЛЬН"), ["ch4_absorption"]),
             (("КРИТЕРИИ", "ВЫБОР ЛАЗЕРА"), ["ch4_choice"]),
         ],
+        5: [
+            (("ОПТИКА", "ПЛОТНОСТЬ", "РАСЧЁТ"), ["ch5_intensity"]),
+            (("СНЕЛЛИУС",), ["ch5_snell"]),
+            (("РАЗМЕР ПЯТНА", "ФОРМУЛА №1"), ["ch5_spot"]),
+            (("ГЛУБИНА РЕЗКОСТИ", "ФОРМУЛА №2"), ["ch5_dof", "tab:ch5_na_table"]),
+            (("M²", "M2", "КАЧЕСТВО ПУЧКА", "ИТОГ"), ["ch5_m2"]),
+        ],
     }
 
     rich_chapters = []
@@ -765,6 +953,7 @@ def build_book_model(catalog):
     ch2, glossary = load_lecture1_sections()
     ch3 = load_lecture2_sections()
     ch4 = load_lecture4_sections()
+    ch5 = load_lecture5_sections()
 
     chapters = [
         {
@@ -791,9 +980,15 @@ def build_book_model(catalog):
             "subtitle": "Фотохимия и тепло, спектральное поглощение, критерии выбора источника",
             "sections": ch4,
         },
+        {
+            "number": 5,
+            "title": "Геометрическая оптика: как линзы собирают луч в пятно",
+            "subtitle": "Плотность мощности I = P/S, числовая апертура, DOF и параметр M²",
+            "sections": ch5,
+        },
     ]
     rich = attach_media(chapters, catalog)
-    glossary = list(glossary) + GLOSSARY_CH4
+    glossary = list(glossary) + GLOSSARY_CH4 + GLOSSARY_CH5
     return rich, list(PREFACE), glossary
 
 
@@ -1167,7 +1362,7 @@ def main():
     print(f"Chapters={len(chapters)}; figures={n_fig}; tables={n_tab}")
     for ch in chapters:
         print(f"  Ch{ch['number']}: {len(ch['sections'])} sections — first={ch['sections'][0]['title']}; last={ch['sections'][-1]['title']}")
-    # Полная версия (лекции 1–4) — исходники в Lectures_for_print
+    # Полная версия (лекции 1–5) — исходники в Lectures_for_print
     build_docx(chapters, preface, glossary, DOCX_PATH)
     build_pdf(chapters, preface, glossary, PDF_PATH)
     # Та же полная версия — в папку «Методичка» для раздачи (PDF + Word)

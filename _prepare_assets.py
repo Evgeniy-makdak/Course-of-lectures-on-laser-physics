@@ -143,6 +143,29 @@ def prepare_all() -> dict:
     for key, fn, cap in figs4:
         catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
 
+    # Lecture 5 / Chapter 5
+    m5 = _load(ROOT / "Lecture-5-main" / "build_lecture_5.py")
+    figs5 = [
+        ("ch5_intensity", m5.draw_intensity_comparison_pil,
+         "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
+        ("ch5_snell", m5.draw_snell_lens_pil,
+         "Закон Снеллиуса и сборка параллельных лучей в фокус"),
+        ("ch5_spot", m5.draw_spot_size_pil,
+         "Дифракционный предел: d ≈ λ/NA"),
+        ("ch5_dof", m5.draw_dof_chart_pil,
+         "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
+        ("ch5_m2", m5.draw_m2_comparison_pil,
+         "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
+    ]
+    for key, fn, cap in figs5:
+        catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
+
+    catalog["tables"]["ch5_na_table"] = {
+        "caption": "Три случая числовой аpertуры: промышленный, лабораторный и экстремальный",
+        "headers": list(m5.NA_TABLE["headers"]),
+        "rows": [list(row) for row in m5.NA_TABLE["rows"]],
+    }
+
     # Таблица сценариев больше не дублируем: она дана цветным рисунком ch4_absorption
     catalog["tables"].pop("ch4_absorption", None)
 
