@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Сборка печатной методички по 5 лекциям курса.
-Порядок глав: бывшая Лекция 3 → 1; Лекция 1 → 2; Лекция 2 → 3; Лекция 4 → 4; Лекция 5 → 5.
+Сборка печатной методички по курсу.
+Порядок глав: бывшая Лекция 3 → 1; Лекция 1 → 2; Лекция 2 → 3; Лекция 4 → 4;
+Лекция 4-доп → 5; Лекция 5 → 6.
 Текст = раскадровки без спикерских ремарок; со схемами, рисунками и таблицами.
 """
 from __future__ import annotations
@@ -33,21 +34,24 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from _prepare_assets import prepare_all
+from _prepare_assets import ROOT, lecture4dop_dir, prepare_all
 
-ROOT = Path(r"C:\Users\Volkov\Desktop\Lecture-Unscheduled")
 OUT_DIR = Path(__file__).resolve().parent
 DOCX_PATH = OUT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 PDF_PATH = OUT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 ASSETS = OUT_DIR / "assets"
-# Распространяемая версия (лекции 1–5) — папка «Методичка» и копия на Рабочий стол
-STUDENT_DIR = ROOT / "Методичка"
+# Распространяемая версия — папка «Методичка» рядом с исходниками лекций (Windows)
+# или копия в корне репозитория (если исходников нет)
+if (ROOT / "Lecture-1-main").exists():
+    STUDENT_DIR = ROOT / "Методичка"
+else:
+    STUDENT_DIR = OUT_DIR
 STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 # ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
-DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-5.docx"
+DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-6.docx"
 # Копия в корне репозитория (для GitHub / Яндекс Документы)
-REPO_STUDENT_DOCX = OUT_DIR / "Metodichka_lectures_1-5.docx"
+REPO_STUDENT_DOCX = OUT_DIR / "Metodichka_lectures_1-6.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -86,8 +90,31 @@ GLOSSARY_CH4 = [
     "Дальний ИК\tИК-диапазон десятков микрометров (CO₂ ~10,6 мкм); эффективен для многих неметаллов",
 ]
 
-# Дополнение к глоссарию из лекции 5 (геометрическая оптика)
+# Дополнение к глоссарию из лекции 4-доп (глава 5)
 GLOSSARY_CH5 = [
+    "SHG\tГенерация второй гармоники (Second Harmonic Generation): 1070 нм (ω) → 535 нм (2ω) в нелинейном кристалле",
+    "PPLN\tПериодически поляризованный ниобат лития (Periodically Poled Lithium Niobate); знак χ⁽²⁾ меняется каждые Λ",
+    "«Зелёная щель»\tGreen gap: падение эффективности InGaN-диодов в зелёном диапазоне из-за дефектов решётки и QCSE",
+    "InGaN\tНитрид индия-галлия — полупроводниковая система диодных лазеров видимого диапазона",
+    "QCSE\tКвантово-размерный эффект Штарка: пьезополе в квантовой яме разводит электрон и дырку",
+    "V-дефекты\tДефекты кристаллической решётки InGaN при высокой доле In; ловушки, переводящие энергию в тепло",
+    "χ⁽¹⁾, χ⁽²⁾, χ⁽³⁾\tЛинейная, квадратичная и кубическая восприимчивости в разложении поляризации P(E)",
+    "ε₀\tЭлектрическая постоянная ≈ 8,85·10⁻¹² Ф/м",
+    "ω, 2ω\tЦиклическая частота накачки и второй гармоники; ω = 2π·c/λ",
+    "Λ\tПериод решётки переполяризации PPLN (прописная лямбда); для 1070→535 нм Λ ≈ 6,96 мкм",
+    "Δk\tРассогласование волновых чисел: Δk = k₂ω − 2k_ω; условие синхронизма Δk = 2π/Λ",
+    "sinc²(x)\tКвадрат sinc(x) = sin(x)/x; описывает падение эффективности SHG при фазовом рассогласовании",
+    "η\tЭффективность преобразования SHG: η = P₂ω / P_ω",
+    "d_eff\tЭффективный коэффициент нелинейности; для MgO:PPLN d₃₃ ≈ 25 пм/В",
+    "Квазифазовый синхронизм\tКомпенсация набега фазы за счёт периодического переворота знака χ⁽²⁾ в PPLN",
+    "Оптическое выпрямление\tПостоянная составляющая P⁽²⁾(t) (~ 1/2): поле не излучает, для SHG бесполезно",
+    "dn/dT\tТермооптический коэффициент: изменение показателя преломления с температурой",
+    "Плавленый кварц\tFused silica; dn/dT ≈ +9·10⁻⁶ К⁻¹, прозрачен на 1070 и 535 нм; материал клина термокомпенсации",
+    "Двухпроходная схема\tSHG при прямом и обратном проходе через кристалл; удваивает длину взаимодействия",
+]
+
+# Дополнение к глоссарию из лекции 5 (геометрическая оптика) — глава 6
+GLOSSARY_CH6 = [
     "I\tПлотность мощности (интенсивность): I = P/S, Вт/см²",
     "P\tМощность лазера, Вт",
     "S\tПлощадь лазерного пятна, см²",
@@ -171,20 +198,61 @@ def os_environ_windir() -> str:
 
 
 def _register_fonts():
-    windir = Path(os_environ_windir())
-    regular = windir / "Fonts" / "times.ttf"
-    bold = windir / "Fonts" / "timesbd.ttf"
-    italic = windir / "Fonts" / "timesi.ttf"
-    if not regular.exists():
-        regular = windir / "Fonts" / "arial.ttf"
-        bold = windir / "Fonts" / "arialbd.ttf"
-        italic = windir / "Fonts" / "ariali.ttf"
+    import os
+    windir = Path(os.environ.get("WINDIR", r"C:\Windows"))
+    candidates = [
+        (
+            windir / "Fonts" / "times.ttf",
+            windir / "Fonts" / "timesbd.ttf",
+            windir / "Fonts" / "timesi.ttf",
+        ),
+        (
+            Path("/System/Library/Fonts/Supplemental/Times New Roman.ttf"),
+            Path("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf"),
+            Path("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf"),
+        ),
+        (
+            windir / "Fonts" / "arial.ttf",
+            windir / "Fonts" / "arialbd.ttf",
+            windir / "Fonts" / "ariali.ttf",
+        ),
+        (
+            Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
+            Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"),
+            Path("/System/Library/Fonts/Supplemental/Arial Italic.ttf"),
+        ),
+    ]
+    regular = bold = italic = None
+    for reg, bd, it in candidates:
+        if reg.exists():
+            regular, bold, italic = reg, bd, it
+            break
+    if regular is None:
+        raise FileNotFoundError("Не найден Times New Roman / Arial для PDF")
     pdfmetrics.registerFont(TTFont("Book", str(regular)))
     pdfmetrics.registerFont(TTFont("BookBold", str(bold if bold.exists() else regular)))
+    # ∝, → и др. нет в Times New Roman — отдельный шрифт
+    sym = None
+    for cand in (
+        Path("/Library/Fonts/Arial Unicode.ttf"),
+        Path("/System/Library/Fonts/Supplemental/Arial Unicode.ttf"),
+        Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
+        Path("/System/Library/Fonts/Apple Symbols.ttf"),
+        windir / "Fonts" / "seguisym.ttf",
+        windir / "Fonts" / "arialuni.ttf",
+        windir / "Fonts" / "arial.ttf",
+    ):
+        if cand.exists():
+            try:
+                pdfmetrics.registerFont(TTFont("BookSym", str(cand)))
+                sym = "BookSym"
+                break
+            except Exception:
+                continue
     if italic.exists():
         pdfmetrics.registerFont(TTFont("BookItalic", str(italic)))
-        return "Book", "BookBold", "BookItalic"
-    return "Book", "BookBold", "Book"
+        return "Book", "BookBold", "BookItalic", sym
+    return "Book", "BookBold", "Book", sym
 
 
 SPEAKER_LINE_RE = re.compile(
@@ -233,6 +301,22 @@ def _to_sub(s: str) -> str:
     )
 
 
+def _tex_markup_to_unicode(t: str) -> str:
+    """Мини-разметка Лекции 4-доп: ^{...} степень, _{...} индекс."""
+    def sup(m):
+        return _to_super(m.group(1).replace("−", "-"))
+
+    def sub(m):
+        s = m.group(1).replace("−", "-")
+        if re.fullmatch(r"[0-9+\-=()]+", s):
+            return _to_sub(s)
+        return "_" + s
+
+    t = re.sub(r"\^\{([^{}]+)\}", sup, t)
+    t = re.sub(r"_\{([^{}]+)\}", sub, t)
+    return t
+
+
 def typography_fix(text: str) -> str:
     """Normalize powers, indices, Greek nu, strip raw HTML sub/sup tags."""
     if not text:
@@ -244,6 +328,7 @@ def typography_fix(text: str) -> str:
     t = re.sub(r"<sub>\s*([^<]*?)\s*</sub>", lambda m: _to_sub(m.group(1).replace("−", "-")), t, flags=re.I)
     # leftover angle-bracket artifacts
     t = t.replace("<sup>", "").replace("</sup>", "").replace("<sub>", "").replace("</sub>", "")
+    t = _tex_markup_to_unicode(t)
 
     # Summation formula (after tag conversion or raw HTML leftovers)
     t = re.sub(
@@ -285,9 +370,11 @@ def typography_fix(text: str) -> str:
         lambda m: "exp(" + m.group(1).strip() + ")",
         t,
     )
-    # leftover f-string artifacts
     t = re.sub(r"\{MOON_SPOT_KM:[^}]+\}", "3,8", t)
     t = re.sub(r"\{MOON_R_KM[^}]*\}", "384400", t)
+    # Lecture 4-доп: смешанные индексы 2ω после _{2ω} → _2ω
+    t = t.replace("P_2ω", "P₂ω").replace("k_2ω", "k₂ω").replace("n_2ω", "n₂ω")
+    t = t.replace("λ_2ω", "λ₂ω").replace("d_33", "d₃₃")
 
     # Greek nu and multiplication
     t = t.replace("h*nu", "h·ν").replace("h·nu", "h·ν").replace("h ν", "h·ν")
@@ -438,6 +525,95 @@ def normalize_sections(sections: list[tuple[str, list[str]]]) -> list[tuple[str,
         core = typography_fix(core)
         numbered.append((f"{i}. {core}", paras))
     return numbered
+
+
+HANDBOOK_CHAPTER_KEYS = {
+    1: "Строение атома",
+    2: "Что такое свет",
+    3: "Физические основы работы лазера",
+    4: "Свет как поток фотонов",
+    6: "Геометрическая оптика",
+}
+
+
+def _handbook_docx_candidates() -> list[Path]:
+    return [
+        DOCX_PATH,
+        OUT_DIR / "Metodichka_lectures_1-6.docx",
+        OUT_DIR / "Metodichka_lectures_1-5.docx",
+    ]
+
+
+def load_sections_from_existing_handbook(chapter_number: int) -> list[tuple[str, list[str]]]:
+    """Запасной путь: текст главы из уже собранной методички (по заголовку, не по номеру)."""
+    from docx import Document as Doc
+
+    key = HANDBOOK_CHAPTER_KEYS[chapter_number]
+    path = next((p for p in _handbook_docx_candidates() if p.exists()), None)
+    if path is None:
+        raise FileNotFoundError(f"Нет исходников лекции и нет DOCX методички для главы {chapter_number}")
+    doc = Doc(path)
+    paras_raw = [p.text.replace("\xa0", " ").strip() for p in doc.paragraphs]
+    ch_re = re.compile(r"^Глава\s+\d+\.\s+(.+)$")
+    hits = [i for i, t in enumerate(paras_raw) if ch_re.match(t) and key in ch_re.match(t).group(1)]
+    if not hits:
+        raise RuntimeError(f"В {path.name} не найдена глава «{key}»")
+    start = hits[-1]
+    end = len(paras_raw)
+    for j in range(start + 1, len(paras_raw)):
+        if paras_raw[j].startswith("Глава ") or paras_raw[j].startswith("Приложение."):
+            end = j
+            break
+    body = paras_raw[start + 2:end]  # skip title + subtitle
+    sec_re = re.compile(r"^\d+\.\s+\S")
+    sections: list[tuple[str, list[str]]] = []
+    title = None
+    buf: list[str] = []
+
+    def flush():
+        nonlocal title, buf
+        if title and buf:
+            sections.append((title, buf[:]))
+        title, buf = None, []
+
+    for line in body:
+        if not line:
+            continue
+        if line.startswith("Рис. ") or line.startswith("Таблица "):
+            continue
+        if sec_re.match(line):
+            flush()
+            title = line
+            continue
+        if title:
+            buf.append(line)
+    flush()
+    return sections
+
+
+def load_glossary_from_existing_handbook() -> list[str]:
+    from docx import Document as Doc
+
+    path = next((p for p in _handbook_docx_candidates() if p.exists()), None)
+    if path is None:
+        return []
+    doc = Doc(path)
+    lines = [p.text.replace("\xa0", " ").strip() for p in doc.paragraphs]
+    try:
+        i0 = next(i for i, t in enumerate(lines) if t.startswith("Приложение. Краткий глоссарий"))
+    except StopIteration:
+        return []
+    # body appendix is the last occurrence
+    idxs = [i for i, t in enumerate(lines) if t.startswith("Приложение. Краткий глоссарий")]
+    i0 = idxs[-1] + 1
+    out = []
+    for t in lines[i0:]:
+        if not t:
+            continue
+        if t.startswith("Глоссарий составлен"):
+            continue
+        out.append(t)
+    return out
 
 
 # ── loaders ────────────────────────────────────────────────────────────────
@@ -762,7 +938,7 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
 
 
 def load_lecture5_sections() -> list[tuple[str, list[str]]]:
-    """Глава 5: геометрическая оптика — книжный стиль, без спикерских подсказок в скобках."""
+    """Глава 6: геометрическая оптика — книжный стиль, без спикерских подсказок в скобках."""
     import importlib.util
 
     py_path = ROOT / "Lecture-5-main" / "build_lecture_5.py"
@@ -839,6 +1015,66 @@ def load_lecture5_sections() -> list[tuple[str, list[str]]]:
     return normalize_sections(dedupe_handbook_terminology(adapted))
 
 
+def load_lecture4dop_sections() -> list[tuple[str, list[str]]]:
+    """Глава 5: генерация зелёного излучения — книжный стиль по раскадровке Лекции 4-доп."""
+    script = load_script(lecture4dop_dir() / "build_lecture_4dop.py")
+    sections = paragraphs_from_script_items(script)
+    adapted = []
+    for title, paras in sections:
+        title = title.replace("МОЁ ПРЕДЛОЖЕНИЕ:", "ПРЕДЛОЖЕНИЕ АВТОРА:")
+        ap = []
+        for p in paras:
+            p = p.replace(
+                "Добрый день. Мы продолжаем курс. В предыдущих лекциях мы разобрали, как оптика управляет плотностью мощности — тем, что определяет, плавится металл или нет.",
+                "В предыдущих главах разобраны природа света, устройство лазера и спектральное поглощение — то, что определяет, плавится металл или нет.",
+            )
+            p = p.replace(
+                "Мы продолжаем курс. В предыдущих лекциях мы разобрали, как оптика управляет плотностью мощности — тем, что определяет, плавится металл или нет.",
+                "В предыдущих главах разобраны природа света, устройство лазера и спектральное поглощение — то, что определяет, плавится металл или нет.",
+            )
+            p = p.replace(
+                "Сегодня мы разберём проблему, которая стоит перед всей отраслью аддитивных технологий:",
+                "В этой главе разбирается проблема, которая стоит перед всей отраслью аддитивных технологий:",
+            )
+            p = p.replace(
+                "И главное: как мы предлагаем эту проблему решить. Речь пойдёт о генерации зелёного излучения с длиной волны 535 нанометров — и о моём предложении, которое делает эту технологию экономически доступной.",
+                "Главный вопрос главы: как эту проблему решить. Речь пойдёт о генерации зелёного излучения с длиной волны 535 нанометров — и о предложении, которое делает эту технологию экономически доступной.",
+            )
+            p = p.replace("План будет таким.", "План главы:")
+            p = p.replace("Давайте начнём с физики.", "Начнём с физики.")
+            p = p.replace("Вспомним ключевое понятие", "Напомним ключевое понятие")
+            p = p.replace("Теперь посмотрим на зелёный диапазон.", "Рассмотрим зелёный диапазон.")
+            p = p.replace("Объясню физику.", "Физика процесса такова.")
+            p = p.replace("Давайте разберём его математику.", "Разберём его математику.")
+            p = p.replace(
+                "Мы пойдём другим путём. Мы возьмём мощный и дешёвый инфракрасный лазер",
+                "Пойдём другим путём: возьмём мощный и дешёвый инфракрасный лазер",
+            )
+            p = p.replace("Расшифровка каждого символа — в таблице на слайде.", "Расшифровка каждого символа — в таблице ниже.")
+            p = p.replace("Обратите внимание:", "Важно:")
+            p = p.replace("Теперь — самое важное. Почему зелёные такие дорогие и что я предлагаю.", "Далее — ключевой практический вопрос: почему зелёные лазеры так дороги и что предлагается.")
+            p = p.replace("Моё предложение — двухпроходная схема", "Предложение автора — двухпроходная схема")
+            p = p.replace("Моё предложение — это применение", "Предложение автора — это применение")
+            p = p.replace("Моё предложение:", "Предложение автора:")
+            p = p.replace("Что именно является моим предложением?", "Что именно является предложением этой главы?")
+            p = p.replace("Прежде чем описывать схему, я должен быть честен:", "Прежде чем описывать схему, важно оговорить:")
+            p = p.replace("вместо пассивной термостабилизации кристалла в печи я предлагаю", "вместо пассивной термостабилизации кристалла в печи предлагается")
+            p = p.replace("Вот моя логика как физика-теоретика:", "Логика выбора материала:")
+            p = p.replace("Это означает, что я могу точно рассчитать", "Это означает, что можно точно рассчитать")
+            p = p.replace("Моё предложение — использовать отдельный клин", "Предложение автора — использовать отдельный клин")
+            p = p.replace("Расшифровка символов — в таблице на слайде.", "Расшифровка символов — в таблице ниже.")
+            p = p.replace("Сфиксируем пять тезисов.", "Зафиксируем пять тезисов.")
+            p = p.replace("Итак, мы разобрали физику", "Итак, разобрана физика")
+            p = p.replace("Спасибо за внимание. Готов ответить на вопросы.", "")
+            p = p.replace("в предыдущих лекциях", "в предыдущих главах")
+            p = p.replace("на слайде", "на рисунке")
+            if p.strip():
+                ap.append(p)
+        if ap:
+            adapted.append((title, ap))
+    return normalize_sections(adapted)
+
+
 # ── attach media ───────────────────────────────────────────────────────────
 
 def _match(title: str, *keys: str) -> bool:
@@ -908,11 +1144,18 @@ def attach_media(chapters, catalog):
             (("КРИТЕРИИ", "ВЫБОР ЛАЗЕРА"), ["ch4_choice"]),
         ],
         5: [
-            (("ОПТИКА", "ПЛОТНОСТЬ", "РАСЧЁТ"), ["ch5_intensity"]),
-            (("СНЕЛЛИУС",), ["ch5_snell"]),
-            (("РАЗМЕР ПЯТНА", "ФОРМУЛА №1"), ["ch5_spot"]),
-            (("ГЛУБИНА РЕЗКОСТИ", "ФОРМУЛА №2"), ["ch5_dof", "tab:ch5_na_table"]),
-            (("M²", "M2", "КАЧЕСТВО ПУЧКА", "ИТОГ"), ["ch5_m2"]),
+            (("МЕДЬ", "ИК-ЛАЗЕР"), ["ch5_copper", "tab:ch5_copper"]),
+            (("ПРЯМАЯ ГЕНЕРАЦИЯ", "ЗЕЛЁНОГО СВЕТА"), ["ch5_green_gap", "ch5_photon_energy", "tab:ch5_green_gap"]),
+            (("НЕЛИНЕЙН", "ВТОРОЙ ГАРМОН"), ["ch5_asym", "ch5_shg", "ch5_cos2", "tab:ch5_chi"]),
+            (("ДВУХПРОХОД", "ТЕРМОКОМПЕНС", "ПРЕДЛОЖЕН"), ["ch5_twopass", "ch5_sinc2", "ch5_eta", "tab:ch5_eta"]),
+            (("ИТОГ",), ["ch5_economy"]),
+        ],
+        6: [
+            (("ОПТИКА", "ПЛОТНОСТЬ", "РАСЧЁТ"), ["ch6_intensity"]),
+            (("СНЕЛЛИУС",), ["ch6_snell"]),
+            (("РАЗМЕР ПЯТНА", "ФОРМУЛА №1"), ["ch6_spot"]),
+            (("ГЛУБИНА РЕЗКОСТИ", "ФОРМУЛА №2"), ["ch6_dof", "tab:ch6_na_table"]),
+            (("M²", "M2", "КАЧЕСТВО ПУЧКА", "ИТОГ"), ["ch6_m2"]),
         ],
     }
 
@@ -922,6 +1165,7 @@ def attach_media(chapters, catalog):
         used_figs = set()
         for title, paras in ch["sections"]:
             blocks = [{"type": "text", "text": p} for p in paras]
+            pending = []
             for keys, media_keys in rules.get(ch["number"], []):
                 if _match(title, *keys):
                     for mk in media_keys:
@@ -934,8 +1178,10 @@ def attach_media(chapters, catalog):
                             if item:
                                 used_figs.add(mk)
                         if item:
-                            insert_at = min(2, len(blocks))
-                            blocks.insert(insert_at, item)
+                            pending.append(item)
+            insert_at = min(2, len(blocks))
+            for i, item in enumerate(pending):
+                blocks.insert(insert_at + i, item)
             rich_sections.append({"title": title, "blocks": blocks})
         # Ensure ch2 threshold appears if missed (attach to threshold section by fuzzy)
         if ch["number"] == 2 and "ch2_threshold" not in used_figs:
@@ -950,12 +1196,24 @@ def attach_media(chapters, catalog):
     return rich_chapters
 
 
+def _try_source_or_docx(loader, lecture_rel: str, handbook_ch: int):
+    src = ROOT / lecture_rel
+    if src.exists():
+        return loader()
+    return load_sections_from_existing_handbook(handbook_ch)
+
+
 def build_book_model(catalog):
-    ch1 = load_lecture3_sections()
-    ch2, glossary = load_lecture1_sections()
-    ch3 = load_lecture2_sections()
-    ch4 = load_lecture4_sections()
-    ch5 = load_lecture5_sections()
+    ch1 = _try_source_or_docx(load_lecture3_sections, "Lecture-3-main/build_lecture_3.py", 1)
+    if (ROOT / "Lecture-1-main").exists():
+        ch2, glossary = load_lecture1_sections()
+    else:
+        ch2 = load_sections_from_existing_handbook(2)
+        glossary = load_glossary_from_existing_handbook()
+    ch3 = _try_source_or_docx(load_lecture2_sections, "Lecture-2-main/build_lecture_2.py", 3)
+    ch4 = _try_source_or_docx(load_lecture4_sections, "Lecture-4-main/build_lecture_4.py", 4)
+    ch5 = load_lecture4dop_sections()
+    ch6 = _try_source_or_docx(load_lecture5_sections, "Lecture-5-main/build_lecture_5.py", 6)
 
     chapters = [
         {
@@ -984,14 +1242,34 @@ def build_book_model(catalog):
         },
         {
             "number": 5,
+            "title": "Генерация зелёного излучения для аддитивных технологий",
+            "subtitle": "Медь, «зелёная щель», SHG в PPLN и двухпроходная схема с термокомпенсацией",
+            "sections": ch5,
+        },
+        {
+            "number": 6,
             "title": "Геометрическая оптика: как линзы собирают луч в пятно",
             "subtitle": "Плотность мощности I = P/S, числовая апертура, DOF и параметр M²",
-            "sections": ch5,
+            "sections": ch6,
         },
     ]
     rich = attach_media(chapters, catalog)
-    glossary = list(glossary) + GLOSSARY_CH4 + GLOSSARY_CH5
+    glossary = _merge_glossary(list(glossary), GLOSSARY_CH4 + GLOSSARY_CH5 + GLOSSARY_CH6)
     return rich, list(PREFACE), glossary
+
+
+def _merge_glossary(base: list[str], extras: list[str]) -> list[str]:
+    keys = set()
+    out = []
+    for g in base + extras:
+        key = re.split(r"\t| {2,}", g, maxsplit=1)[0].strip().lower()
+        if len(key) < 1:
+            continue
+        if key in keys:
+            continue
+        keys.add(key)
+        out.append(g)
+    return out
 
 
 # ── DOCX ───────────────────────────────────────────────────────────────────
@@ -1004,6 +1282,49 @@ def set_run_font(run, name="Times New Roman", size=12, bold=False, italic=False)
     run.italic = italic
 
 
+# Остаточные ASCII-индексы (ω не имеет юникод-подстрочной формы)
+_DOCX_SUB_RE = re.compile(
+    r"(₂ω|_2ω|_ω|_eff|_акт|_пл|_реал|_идеал|_max|_погл|_пад|_ph|_33)"
+)
+_DOCX_SUB_MAP = {
+    "₂ω": "2ω",
+    "_2ω": "2ω",
+    "_ω": "ω",
+    "_eff": "eff",
+    "_акт": "акт",
+    "_пл": "пл",
+    "_реал": "реал",
+    "_идеал": "идеал",
+    "_max": "max",
+    "_погл": "погл",
+    "_пад": "пад",
+    "_ph": "ph",
+    "_33": "33",
+}
+
+
+def _add_script_runs(p, text, *, size=12, bold=False, italic=False):
+    """Текст в run'ы; _ω / _eff / ₂ω → настоящий подстрочный индекс Word."""
+    parts = re.split(r"(\*\*.+?\*\*)", text)
+    for part in parts:
+        if not part:
+            continue
+        is_bold = part.startswith("**") and part.endswith("**") and len(part) >= 4
+        chunk = part[2:-2] if is_bold else part
+        pos = 0
+        for m in _DOCX_SUB_RE.finditer(chunk):
+            if m.start() > pos:
+                run = p.add_run(chunk[pos:m.start()])
+                set_run_font(run, size=size, bold=bold or is_bold, italic=italic)
+            run = p.add_run(_DOCX_SUB_MAP[m.group()])
+            set_run_font(run, size=size, bold=bold or is_bold, italic=italic)
+            run.font.subscript = True
+            pos = m.end()
+        if pos < len(chunk):
+            run = p.add_run(chunk[pos:])
+            set_run_font(run, size=size, bold=bold or is_bold, italic=italic)
+
+
 def add_para(doc, text, *, size=12, bold=False, italic=False,
              align=WD_ALIGN_PARAGRAPH.JUSTIFY, space_after=8, first_indent=True):
     p = doc.add_paragraph()
@@ -1014,21 +1335,7 @@ def add_para(doc, text, *, size=12, bold=False, italic=False,
     p.paragraph_format.line_spacing = 1.15
     if first_indent and align == WD_ALIGN_PARAGRAPH.JUSTIFY:
         p.paragraph_format.first_line_indent = Cm(1.25)
-    # Support **bold** fragments inside the paragraph
-    parts = re.split(r"(\*\*.+?\*\*)", text)
-    if len(parts) == 1 and not parts[0].startswith("**"):
-        run = p.add_run(text)
-        set_run_font(run, size=size, bold=bold, italic=italic)
-        return p
-    for part in parts:
-        if not part:
-            continue
-        if part.startswith("**") and part.endswith("**") and len(part) >= 4:
-            run = p.add_run(part[2:-2])
-            set_run_font(run, size=size, bold=True, italic=italic)
-        else:
-            run = p.add_run(part)
-            set_run_font(run, size=size, bold=bold, italic=italic)
+    _add_script_runs(p, text, size=size, bold=bold, italic=italic)
     return p
 
 
@@ -1049,8 +1356,13 @@ def add_figure_docx(doc, path: Path, caption: str):
     cap = doc.add_paragraph()
     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
     cap.paragraph_format.space_after = Pt(10)
-    r = cap.add_run(caption)
-    set_run_font(r, size=10, italic=True)
+    _add_script_runs(cap, caption, size=10, italic=True)
+
+
+def _fill_cell(cell, text, *, size=9, bold=False):
+    cell.text = ""
+    p = cell.paragraphs[0]
+    _add_script_runs(p, text, size=size, bold=bold)
 
 
 def add_table_docx(doc, headers, rows, caption: str):
@@ -1058,25 +1370,16 @@ def add_table_docx(doc, headers, rows, caption: str):
     cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
     cap.paragraph_format.space_before = Pt(8)
     cap.paragraph_format.space_after = Pt(4)
-    r = cap.add_run(caption)
-    set_run_font(r, size=10, italic=True)
+    _add_script_runs(cap, caption, size=10, italic=True)
 
     table = doc.add_table(rows=1 + len(rows), cols=len(headers))
     table.style = "Table Grid"
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     for j, h in enumerate(headers):
-        cell = table.rows[0].cells[j]
-        cell.text = h
-        for p in cell.paragraphs:
-            for run in p.runs:
-                set_run_font(run, size=9, bold=True)
+        _fill_cell(table.rows[0].cells[j], h, size=9, bold=True)
     for i, row in enumerate(rows, 1):
         for j, val in enumerate(row):
-            cell = table.rows[i].cells[j]
-            cell.text = val
-            for p in cell.paragraphs:
-                for run in p.runs:
-                    set_run_font(run, size=9)
+            _fill_cell(table.rows[i].cells[j], val, size=9)
     doc.add_paragraph()
 
 
@@ -1163,7 +1466,39 @@ def build_docx(chapters, preface, glossary, out_path: Path | None = None):
 
 # ── PDF ────────────────────────────────────────────────────────────────────
 
-def pdf_escape(text: str, *, bold_font: str | None = None) -> str:
+# Обратные таблицы: юникод-индексы → обычные символы для <super>/<sub> в PDF
+_INV_SUP = str.maketrans(
+    "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱˣʸᶻᵃᵇᶜᵈᵉʰʲᵏˡᵐᵒᵖʳˢᵗᵘᵛʷ",
+    "0123456789+-=()nixyzabcdehjklmoprstuvw",
+)
+_INV_SUB = str.maketrans(
+    "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ",
+    "0123456789+-=()aehijklmnoprstuvx",
+)
+_SUPER_RUN_RE = re.compile(r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱˣʸᶻᵃᵇᶜᵈᵉʰʲᵏˡᵐᵒᵖʳˢᵗᵘᵛʷ]+")
+_SUB_RUN_RE = re.compile(r"[₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ]+")
+_PDF_MATH_RE = re.compile(r"[∝→←↔⇒×]")
+
+
+def _pdf_scripts_to_rl(text: str) -> str:
+    """Times New Roman в PDF не содержит ₀⁽⁾∝ — рисуем индексы тегами ReportLab."""
+    t = _SUPER_RUN_RE.sub(lambda m: f"<super>{m.group().translate(_INV_SUP)}</super>", text)
+    t = _SUB_RUN_RE.sub(lambda m: f"<sub>{m.group().translate(_INV_SUB)}</sub>", t)
+    # _{ω} / _{eff} не имеют юникод-индекса — в PDF тоже подстрочно
+    t = t.replace("_ω", "<sub>ω</sub>")
+    t = t.replace("_eff", "<sub>eff</sub>")
+    # λ<sub>2</sub>ω → λ<sub>2ω</sub>
+    t = re.sub(r"</sub>ω", "ω</sub>", t)
+    return t
+
+
+def _pdf_wrap_math(text: str, sym_font: str | None) -> str:
+    if not sym_font:
+        return text
+    return _PDF_MATH_RE.sub(lambda m: f'<font name="{sym_font}">{m.group()}</font>', text)
+
+
+def pdf_escape(text: str, *, bold_font: str | None = None, sym_font: str | None = None) -> str:
     # typography first (may introduce unicode), then escape XML specials;
     # **...** → bold (via explicit bold font name when provided)
     t = typography_fix(text)
@@ -1180,15 +1515,18 @@ def pdf_escape(text: str, *, bold_font: str | None = None) -> str:
                 out.append(f"<b>{inner}</b>")
         else:
             out.append(part.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
-    return "".join(out)
+    s = "".join(out)
+    s = _pdf_scripts_to_rl(s)
+    s = _pdf_wrap_math(s, sym_font)
+    return s
 
 
 def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
     out_path = out_path or PDF_PATH
-    font, font_bold, font_italic = _register_fonts()
+    font, font_bold, font_italic, sym_font = _register_fonts()
 
     def esc(text: str) -> str:
-        return pdf_escape(text, bold_font=font_bold)
+        return pdf_escape(text, bold_font=font_bold, sym_font=sym_font)
 
     styles = getSampleStyleSheet()
     cover = ParagraphStyle("Cover", parent=styles["Normal"], fontName=font_bold, fontSize=18,
@@ -1219,38 +1557,38 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
         "CoverAuthor", parent=styles["Normal"], fontName=font, fontSize=12,
         leading=16, alignment=TA_CENTER, spaceAfter=14, textColor=HexColor("#222222"),
     )
-    story.append(Paragraph(pdf_escape("ФИЗИКА ЛАЗЕРОВ ДЛЯ АДДИТИВНЫХ (3D) ТЕХНОЛОГИЙ"), cover))
-    story.append(Paragraph(pdf_escape("Методическое пособие по материалам семинарских лекций"), cover_sub))
-    story.append(Paragraph(pdf_escape(f"Автор: {AUTHOR}"), cover_author))
+    story.append(Paragraph(esc("ФИЗИКА ЛАЗЕРОВ ДЛЯ АДДИТИВНЫХ (3D) ТЕХНОЛОГИЙ"), cover))
+    story.append(Paragraph(esc("Методическое пособие по материалам семинарских лекций"), cover_sub))
+    story.append(Paragraph(esc(f"Автор: {AUTHOR}"), cover_author))
     story.append(Spacer(1, 0.3 * cm))
     story.append(Paragraph(
-        pdf_escape("Для студентов и инженеров, осваивающих лазерные процессы в технологиях послойного синтеза"),
+        esc("Для студентов и инженеров, осваивающих лазерные процессы в технологиях послойного синтеза"),
         cover_sub,
     ))
     story.append(PageBreak())
 
-    story.append(Paragraph(pdf_escape("Предисловие"), h1))
+    story.append(Paragraph(esc("Предисловие"), h1))
     for p in preface:
-        story.append(Paragraph(pdf_escape(p), body))
+        story.append(Paragraph(esc(p), body))
     story.append(PageBreak())
 
-    story.append(Paragraph(pdf_escape("Содержание"), h1))
+    story.append(Paragraph(esc("Содержание"), h1))
     for ch in chapters:
-        story.append(Paragraph(pdf_escape(f"Глава {ch['number']}. {ch['title']}"), toc))
-        story.append(Paragraph(pdf_escape(ch["subtitle"]), note))
+        story.append(Paragraph(esc(f"Глава {ch['number']}. {ch['title']}"), toc))
+        story.append(Paragraph(esc(ch["subtitle"]), note))
         for sec in ch["sections"]:
-            story.append(Paragraph(pdf_escape(sec["title"]), toc_sec))
-    story.append(Paragraph(pdf_escape("Приложение. Краткий глоссарий обозначений"), toc))
+            story.append(Paragraph(esc(sec["title"]), toc_sec))
+    story.append(Paragraph(esc("Приложение. Краткий глоссарий обозначений"), toc))
     story.append(PageBreak())
 
     for ch in chapters:
-        story.append(Paragraph(pdf_escape(f"Глава {ch['number']}. {ch['title']}"), h1))
-        story.append(Paragraph(pdf_escape(ch["subtitle"]), note))
+        story.append(Paragraph(esc(f"Глава {ch['number']}. {ch['title']}"), h1))
+        story.append(Paragraph(esc(ch["subtitle"]), note))
         for sec in ch["sections"]:
-            story.append(Paragraph(pdf_escape(sec["title"]), h2))
+            story.append(Paragraph(esc(sec["title"]), h2))
             for block in sec["blocks"]:
                 if block["type"] == "text":
-                    story.append(Paragraph(pdf_escape(block["text"]), body))
+                    story.append(Paragraph(esc(block["text"]), body))
                 elif block["type"] == "figure" and block["path"].exists():
                     # Сохраняем пропорции; широкие схемы — на всю ширину полосы набора
                     try:
@@ -1270,12 +1608,12 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
                     img = RLImage(str(block["path"]), width=img_w, height=img_h)
                     story.append(Spacer(1, 6))
                     story.append(img)
-                    story.append(Paragraph(pdf_escape(block["caption"]), note))
+                    story.append(Paragraph(esc(block["caption"]), note))
                 elif block["type"] == "table":
-                    story.append(Paragraph(pdf_escape(block["caption"]), note))
-                    data = [[Paragraph(pdf_escape(h), cell_h) for h in block["headers"]]]
+                    story.append(Paragraph(esc(block["caption"]), note))
+                    data = [[Paragraph(esc(h), cell_h) for h in block["headers"]]]
                     for row in block["rows"]:
-                        data.append([Paragraph(pdf_escape(c), cell) for c in row])
+                        data.append([Paragraph(esc(c), cell) for c in row])
                     n_cols = max(1, len(block["headers"]))
                     if n_cols == 6:
                         # Сценарии A(λ): узкие №/A, широкие «что/почему»
@@ -1296,14 +1634,14 @@ def build_pdf(chapters, preface, glossary, out_path: Path | None = None):
                     story.append(Spacer(1, 8))
         story.append(PageBreak())
 
-    story.append(Paragraph(pdf_escape("Приложение. Краткий глоссарий обозначений"), h1))
+    story.append(Paragraph(esc("Приложение. Краткий глоссарий обозначений"), h1))
     story.append(Paragraph(
-        pdf_escape("Глоссарий составлен по материалам главы о природе света и сохранён как справочник обозначений для всего курса."),
+        esc("Глоссарий составлен по материалам главы о природе света и сохранён как справочник обозначений для всего курса."),
         note,
     ))
     for g in glossary:
         if len(g) >= 3:
-            story.append(Paragraph(pdf_escape(g), body0))
+            story.append(Paragraph(esc(g), body0))
 
     def _page(canvas, doc_):
         canvas.saveState()
@@ -1332,7 +1670,7 @@ def write_readme(chapters):
         "",
         f"- `{DOCX_PATH.name}`",
         f"- `{PDF_PATH.name}`",
-        f"- `{REPO_STUDENT_DOCX.name}` — Word для Яндекс Документов (главы 1–5, = PDF)",
+        f"- `{REPO_STUDENT_DOCX.name}` — Word для Яндекс Документов (главы 1–6, = PDF)",
         "- `assets/` — рисунки и схемы",
         "",
         "## Главы",
@@ -1365,12 +1703,13 @@ def main():
     print(f"Chapters={len(chapters)}; figures={n_fig}; tables={n_tab}")
     for ch in chapters:
         print(f"  Ch{ch['number']}: {len(ch['sections'])} sections — first={ch['sections'][0]['title']}; last={ch['sections'][-1]['title']}")
-    # Полная версия (лекции 1–5) — исходники в Lectures_for_print
+    # Полная версия — исходники в Lectures_for_print / репозиторий
     build_docx(chapters, preface, glossary, DOCX_PATH)
     build_pdf(chapters, preface, glossary, PDF_PATH)
-    # Та же полная версия — в папку «Методичка» для раздачи (PDF + Word)
-    build_pdf(chapters, preface, glossary, STUDENT_PDF_PATH)
-    build_docx(chapters, preface, glossary, STUDENT_DOCX_PATH)
+    if STUDENT_PDF_PATH.resolve() != PDF_PATH.resolve():
+        build_pdf(chapters, preface, glossary, STUDENT_PDF_PATH)
+    if STUDENT_DOCX_PATH.resolve() != DOCX_PATH.resolve():
+        build_docx(chapters, preface, glossary, STUDENT_DOCX_PATH)
     # Копии с латинским именем — репозиторий и Рабочий стол (тот же текст, что PDF/DOCX)
     try:
         import shutil
