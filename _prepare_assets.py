@@ -366,7 +366,7 @@ def prepare_all() -> dict:
         ("ch5_copper", m4d.draw_copper_absorption_pil,
          "Спектральная поглощательная способность меди A(λ): 1070 нм и 535 нм"),
         ("ch5_green_gap", m4d.draw_green_gap_pil,
-         "Прямая генерация 535 нм на InGaN: «зелёная щель» и разрыв мощности"),
+         "Прямая генерация 535 нм на InGaN: «проблема зелёного диапазона» и разрыв мощности"),
         ("ch5_photon_energy", m4d.formula_photon_energy,
          "Энергия фотона E = h·c/λ для λ = 535 нм"),
         ("ch5_asym", m4d.draw_asym_well_pil,
@@ -398,7 +398,7 @@ def prepare_all() -> dict:
         m4d.COPPER_TABLE, "Поглощение меди на 1070 нм и 535 нм",
     )
     catalog["tables"]["ch5_green_gap"] = _tab_from(
-        m4d.GREEN_GAP_TABLE, "Параметры «зелёной щели» InGaN",
+        m4d.GREEN_GAP_TABLE, "Проблема зелёного диапазона InGaN: параметры",
     )
     catalog["tables"]["ch5_chi"] = _tab_from(
         m4d.CHI_TABLE, "Символы разложения поляризации P(E)",
