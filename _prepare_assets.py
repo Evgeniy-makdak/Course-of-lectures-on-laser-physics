@@ -3,39 +3,28 @@
 from __future__ import annotations
 
 import importlib.util
-import io
 import sys
 from pathlib import Path
 
-import os
-
-from PIL import ImageFont
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
-_HERE = Path(__file__).resolve().parent
-_WIN_ROOT = Path(r"C:\Users\Volkov\Desktop\Lecture-Unscheduled")
+_ROOTS = [
+    Path(r"C:\Users\Volkov\Desktop\Lecture-Unscheduled"),
+    Path(__file__).resolve().parent.parent,
+]
 
 
 def _detect_root() -> Path:
-    if _WIN_ROOT.exists() and (_WIN_ROOT / "Lecture-1-main").exists():
-        return _WIN_ROOT
-    parent = _HERE.parent
-    if (parent / "Lecture-4_optional").exists() or (parent / "Lecture-1-main").exists():
-        return parent
-    return _HERE
+    for root in _ROOTS:
+        if (root / "Lecture-1-main").exists():
+            return root
+    return Path(__file__).resolve().parent
 
 
 ROOT = _detect_root()
-ASSETS = _HERE / "assets"
+ASSETS = Path(__file__).resolve().parent / "assets"
 ASSETS.mkdir(parents=True, exist_ok=True)
-
-
-def lecture4dop_dir() -> Path:
-    for cand in (ROOT / "Lecture-4_optional", _HERE.parent / "Lecture-4_optional"):
-        if (cand / "build_lecture_4dop.py").exists():
-            return cand
-    raise FileNotFoundError("Не найден build_lecture_4dop.py в Lecture-4_optional")
 
 
 def _load(py_path: Path):
@@ -45,100 +34,6 @@ def _load(py_path: Path):
     # Avoid running __main__
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
-    return mod
-
-
-def _first_font(*paths: str) -> str | None:
-    for p in paths:
-        if p and Path(p).exists():
-            return p
-    return None
-
-
-def _patch_lecture4dop_fonts(mod) -> None:
-    """macOS (и запасные пути): греческие/индексы на картинках как в Лекции 4-доп."""
-    regular = _first_font(
-        os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", "arial.ttf"),
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
-        "/Library/Fonts/Arial Unicode.ttf",
-    )
-    bold = _first_font(
-        os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", "arialbd.ttf"),
-        "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-        regular,
-    )
-    math = _first_font(
-        os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", "timesi.ttf"),
-        "/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf",
-        "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
-    )
-    symbol = _first_font(
-        os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", "seguisym.ttf"),
-        "/Library/Fonts/Arial Unicode.ttf",
-        "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
-        "/System/Library/Fonts/Apple Symbols.ttf",
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
-    )
-    if regular:
-        mod.FONT_PATH = regular
-        mod.FONT_BOLD_PATH = bold or regular
-    if math:
-        mod.MATH_FONT_PATH = math
-
-    def _pil_font(size=14, bold=False):
-        cands = []
-        if bold:
-            cands += [
-                getattr(mod, "FONT_BOLD_PATH", None),
-                "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-            ]
-        cands += [
-            getattr(mod, "FONT_PATH", None),
-            regular,
-            "/System/Library/Fonts/Supplemental/Arial.ttf",
-        ]
-        for p in cands:
-            if p and os.path.exists(p):
-                try:
-                    return ImageFont.truetype(p, size=size)
-                except OSError:
-                    pass
-        return ImageFont.load_default()
-
-    def _pil_math_font(size=14, bold=False):
-        cands = [
-            math,
-            "/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf",
-            "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
-        ]
-        if bold:
-            cands.insert(0, "/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf")
-        for p in cands:
-            if p and os.path.exists(p):
-                try:
-                    return ImageFont.truetype(p, size=size)
-                except OSError:
-                    continue
-        return _pil_font(size)
-
-    def _pil_symbol_font(size=12):
-        for p in (symbol, "/Library/Fonts/Arial Unicode.ttf",
-                  "/System/Library/Fonts/Supplemental/Arial.ttf"):
-            if p and os.path.exists(p):
-                try:
-                    return ImageFont.truetype(p, size=size)
-                except OSError:
-                    continue
-        return _pil_font(size)
-
-    mod._pil_font = _pil_font
-    mod._pil_math_font = _pil_math_font
-    mod._pil_symbol_font = _pil_symbol_font
-
-
-def load_lecture4dop_module():
-    mod = _load(lecture4dop_dir() / "build_lecture_4dop.py")
-    _patch_lecture4dop_fonts(mod)
     return mod
 
 
@@ -197,7 +92,7 @@ CH3_LASER_TABLE = {
     ],
 }
 
-CH6_NA_TABLE = {
+CH5_NA_TABLE = {
     "caption": "Три случая числовой апертуры: промышленный, лабораторный и экстремальный",
     "headers": ["Параметр", "A: промышл.", "B: лаб.", "C: экстр."],
     "rows": [
@@ -230,12 +125,12 @@ EXISTING_FIGURES = [
     ("ch4_absorption", "ch4_absorption.png",
      "A(λ) (спектральная поглощательная способность) и четыре сценария: лазер → материал → результат"),
     ("ch4_choice", "ch4_choice.png", "Практические критерии выбора лазера и стратегии для алюминия"),
-    # бывшая глава 5 → глава 6 (файлы ch5_*.png сохранены)
-    ("ch6_intensity", "ch5_intensity.png", "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
-    ("ch6_snell", "ch5_snell.png", "Закон Снеллиуса и сборка параллельных лучей в фокус"),
-    ("ch6_spot", "ch5_spot.png", "Дифракционный предел: d ≈ λ/NA"),
-    ("ch6_dof", "ch5_dof.png", "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
-    ("ch6_m2", "ch5_m2.png", "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
+    # глава 5 (геометрическая оптика; PNG-файлы сохраняют прежние имена ch5_*.png)
+    ("ch5_intensity", "ch5_intensity.png", "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
+    ("ch5_snell", "ch5_snell.png", "Закон Снеллиуса и сборка параллельных лучей в фокус"),
+    ("ch5_spot", "ch5_spot.png", "Дифракционный предел: d ≈ λ/NA"),
+    ("ch5_dof", "ch5_dof.png", "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
+    ("ch5_m2", "ch5_m2.png", "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
 ]
 
 
@@ -329,83 +224,36 @@ def prepare_all() -> dict:
         for key, fn, cap in figs4:
             catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
 
-    # Lecture 5 / Chapter 6 (геометрическая оптика)
+    # Lecture 5 / Chapter 5 (геометрическая оптика)
     l5_py = ROOT / "Lecture-5-main" / "build_lecture_5.py"
     if l5_py.exists():
         m5 = _load(l5_py)
-        figs6 = [
-            ("ch6_intensity", m5.draw_intensity_comparison_pil,
+        figs5 = [
+            ("ch5_intensity", m5.draw_intensity_comparison_pil,
              "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
-            ("ch6_snell", m5.draw_snell_lens_pil,
+            ("ch5_snell", m5.draw_snell_lens_pil,
              "Закон Снеллиуса и сборка параллельных лучей в фокус"),
-            ("ch6_spot", m5.draw_spot_size_pil,
+            ("ch5_spot", m5.draw_spot_size_pil,
              "Дифракционный предел: d ≈ λ/NA"),
-            ("ch6_dof", m5.draw_dof_chart_pil,
+            ("ch5_dof", m5.draw_dof_chart_pil,
              "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
-            ("ch6_m2", m5.draw_m2_comparison_pil,
+            ("ch5_m2", m5.draw_m2_comparison_pil,
              "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
         ]
-        for key, fn, cap in figs6:
+        for key, fn, cap in figs5:
             catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
-        catalog["tables"]["ch6_na_table"] = {
-            "caption": CH6_NA_TABLE["caption"],
+        catalog["tables"]["ch5_na_table"] = {
+            "caption": CH5_NA_TABLE["caption"],
             "headers": list(m5.NA_TABLE["headers"]),
             "rows": [list(row) for row in m5.NA_TABLE["rows"]],
         }
     else:
-        catalog["tables"]["ch6_na_table"] = dict(CH6_NA_TABLE)
+        catalog["tables"]["ch5_na_table"] = dict(CH5_NA_TABLE)
 
     # Уже собранные PNG, если исходников лекций 1–5 нет
     for key, filename, caption in EXISTING_FIGURES:
         if key not in catalog["figures"]:
             _add_fig(catalog, key, ASSETS / filename, caption)
-
-    # Lecture 4-доп / Chapter 5 — генерация зелёного излучения
-    m4d = load_lecture4dop_module()
-    figs5 = [
-        ("ch5_copper", m4d.draw_copper_absorption_pil,
-         "Спектральная поглощательная способность меди A(λ): 1070 нм и 535 нм"),
-        ("ch5_green_gap", m4d.draw_green_gap_pil,
-         "Прямая генерация 535 нм на InGaN: «проблема зелёного диапазона» и разрыв мощности"),
-        ("ch5_photon_energy", m4d.formula_photon_energy,
-         "Энергия фотона E = h·c/λ для λ = 535 нм"),
-        ("ch5_asym", m4d.draw_asym_well_pil,
-         "Почему в ниобате лития отклик нелинейный: симметричная и асимметричная ямы"),
-        ("ch5_shg", m4d.draw_shg_ppln_pil,
-         "Генерация второй гармоники (SHG) в кристалле PPLN: 1070 нм (ω) → 535 нм (2ω)"),
-        ("ch5_cos2", m4d.formula_cos2,
-         "Поле накачки E(t) и квадратичный отклик: cos²(ω·t) = (1 + cos(2ω·t))/2"),
-        ("ch5_twopass", m4d.draw_twopass_pil,
-         "Двухпроходная схема с активной клиновидной термокомпенсацией"),
-        ("ch5_sinc2", m4d.draw_sinc2_pil,
-         "Функция sinc²(Δk·L/2): максимум при синхронизме и гашение при рассогласовании фаз"),
-        ("ch5_eta", m4d.formula_efficiency,
-         "Эффективность преобразования η в приближении неистощённой накачки"),
-        ("ch5_economy", m4d.draw_economy_pil,
-         "Экономика решения: промышленный зелёный лазер и внешний SHG-модуль"),
-    ]
-    for key, fn, cap in figs5:
-        catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
-
-    def _tab_from(src: dict, caption: str) -> dict:
-        return {
-            "caption": caption,
-            "headers": list(src["headers"]),
-            "rows": [list(row) for row in src["rows"]],
-        }
-
-    catalog["tables"]["ch5_copper"] = _tab_from(
-        m4d.COPPER_TABLE, "Поглощение меди на 1070 нм и 535 нм",
-    )
-    catalog["tables"]["ch5_green_gap"] = _tab_from(
-        m4d.GREEN_GAP_TABLE, "Проблема зелёного диапазона InGaN: параметры",
-    )
-    catalog["tables"]["ch5_chi"] = _tab_from(
-        m4d.CHI_TABLE, "Символы разложения поляризации P(E)",
-    )
-    catalog["tables"]["ch5_eta"] = _tab_from(
-        m4d.ETA_TABLE, "Символы формулы эффективности преобразования η",
-    )
 
     catalog["tables"].pop("ch4_absorption", None)
 
