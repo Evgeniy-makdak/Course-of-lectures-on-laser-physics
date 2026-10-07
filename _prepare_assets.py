@@ -125,11 +125,13 @@ EXISTING_FIGURES = [
     ("ch4_absorption", "ch4_absorption.png",
      "A(λ) (спектральная поглощательная способность) и четыре сценария: лазер → материал → результат"),
     ("ch4_choice", "ch4_choice.png", "Практические критерии выбора лазера и стратегии для алюминия"),
-    # глава 5 (геометрическая оптика; PNG-файлы сохраняют прежние имена ch5_*.png)
+    # глава 5 (формирование пятна)
     ("ch5_intensity", "ch5_intensity.png", "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
-    ("ch5_snell", "ch5_snell.png", "Закон Снеллиуса и сборка параллельных лучей в фокус"),
+    ("ch5_rays_waves", "ch5_rays_waves.png", "Два языка оптики: геометрические лучи и дифракционное пятно"),
     ("ch5_spot", "ch5_spot.png", "Дифракционный предел: d ≈ λ/NA"),
+    ("ch5_train", "ch5_train.png", "Оптический тракт СЛП-станка: от волокна до порошка"),
     ("ch5_dof", "ch5_dof.png", "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
+    ("ch5_focus", "ch5_focus.png", "Положение фокуса относительно слоя порошка и z-offset"),
     ("ch5_m2", "ch5_m2.png", "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
 ]
 
@@ -224,19 +226,23 @@ def prepare_all() -> dict:
         for key, fn, cap in figs4:
             catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
 
-    # Lecture 5 / Chapter 5 (геометрическая оптика)
+    # Lecture 5 / Chapter 5 (формирование пятна)
     l5_py = ROOT / "Lecture-5-main" / "build_lecture_5.py"
     if l5_py.exists():
         m5 = _load(l5_py)
         figs5 = [
             ("ch5_intensity", m5.draw_intensity_comparison_pil,
              "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
-            ("ch5_snell", m5.draw_snell_lens_pil,
-             "Закон Снеллиуса и сборка параллельных лучей в фокус"),
+            ("ch5_rays_waves", m5.draw_rays_vs_waves_pil,
+             "Два языка оптики: геометрические лучи и дифракционное пятно"),
             ("ch5_spot", m5.draw_spot_size_pil,
              "Дифракционный предел: d ≈ λ/NA"),
+            ("ch5_train", m5.draw_optical_train_pil,
+             "Оптический тракт СЛП-станка: от волокна до порошка"),
             ("ch5_dof", m5.draw_dof_chart_pil,
              "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
+            ("ch5_focus", m5.draw_focus_practice_pil,
+             "Положение фокуса относительно слоя порошка и z-offset"),
             ("ch5_m2", m5.draw_m2_comparison_pil,
              "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
         ]
