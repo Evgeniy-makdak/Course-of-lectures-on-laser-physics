@@ -1,19 +1,25 @@
 # Assets
 
-- FIG ch5_superposition: ch5_superposition.png — Принцип суперпозиции: усиление в фазе и гашение в противофазе
-- FIG ch5_coherence: ch5_coherence.png — Когерентность: две независимые лампы против деления одной волны
-- FIG ch5_path_diff: ch5_path_diff.png — Разность хода и условия максимума/минимума
-- FIG ch5_young: ch5_young.png — Схема опыта Юнга: один источник → две щели → полосы на экране
-- FIG ch5_fringes: ch5_fringes.png — Период интерференционных полос Δx = λL/d
-- FIG ch5_numeric: ch5_numeric.png — Численный пример: расчёт расстояния между полосами
-- FIG ch5_slm_link: ch5_slm_link.png — Интерференция в языке волоконного лазера и SLM
-- FIG ch6_intensity: ch6_intensity.png — Плотность мощности I = P/S: два сценария при P = 200 Вт
-- FIG ch6_rays_waves: ch6_rays_waves.png — Два языка оптики: геометрические лучи и дифракционное пятно
-- FIG ch6_spot: ch6_spot.png — Дифракционный предел: d ≈ λ/NA
-- FIG ch6_train: ch6_train.png — Оптический тракт СЛП-станка: от волокна до порошка
-- FIG ch6_dof: ch6_dof.png — Компромисс NA: диаметр пятна d и глубина резкости DOF
-- FIG ch6_focus: ch6_focus.png — Положение фокуса относительно слоя порошка и z-offset
-- FIG ch6_m2: ch6_m2.png — Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал
+- FIG ch5_reflection: ch5_reflection.png — Закон отражения: угол падения равен углу отражения
+- FIG ch5_refraction: ch5_refraction.png — Закон преломления (Снеллиус): n₁ sin α = n₂ sin β
+- FIG ch5_tir_fiber: ch5_tir_fiber.png — Полное внутреннее отражение и волоконный световод
+- FIG ch5_lens_defs: ch5_lens_defs.png — Тонкая линза: оптический центр, фокусы и фокусное расстояние
+- FIG ch5_lens_rays: ch5_lens_rays.png — Построение изображения в собирающей линзе
+- FIG ch5_thin_lens: ch5_thin_lens.png — Формула тонкой линзы и линейное увеличение
+- FIG ch6_superposition: ch6_superposition.png — Принцип суперпозиции: усиление в фазе и гашение в противофазе
+- FIG ch6_coherence: ch6_coherence.png — Когерентность: две независимые лампы против деления одной волны
+- FIG ch6_path_diff: ch6_path_diff.png — Разность хода и условия максимума/минимума
+- FIG ch6_young: ch6_young.png — Схема опыта Юнга: один источник → две щели → полосы на экране
+- FIG ch6_fringes: ch6_fringes.png — Период интерференционных полос Δx = λL/d
+- FIG ch6_numeric: ch6_numeric.png — Численный пример: расчёт расстояния между полосами
+- FIG ch6_slm_link: ch6_slm_link.png — Интерференция в языке волоконного лазера и SLM
+- FIG ch7_intensity: ch7_intensity.png — Плотность мощности I = P/S: два сценария при P = 200 Вт
+- FIG ch7_rays_waves: ch7_rays_waves.png — Два языка оптики: геометрические лучи и дифракционное пятно
+- FIG ch7_spot: ch7_spot.png — Дифракционный предел: d ≈ λ/NA
+- FIG ch7_train: ch7_train.png — Оптический тракт СЛП-станка: от волокна до порошка
+- FIG ch7_dof: ch7_dof.png — Компромисс NA: диаметр пятна d и глубина резкости DOF
+- FIG ch7_focus: ch7_focus.png — Положение фокуса относительно слоя порошка и z-offset
+- FIG ch7_m2: ch7_m2.png — Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал
 - FIG ch1_atom: ch1_atom.png — Эволюция моделей атома и квантовые числа орбиталей
 - FIG ch1_pauli: ch1_pauli.png — Принцип Паули и заполнение оболочек: N_max = 2n²
 - FIG ch1_sodium: ch1_sodium.png — Пример: переходы в атоме натрия на языке орбиталей и уровней
@@ -34,4 +40,4 @@
 - FIG ch4_choice: ch4_choice.png — Практические критерии выбора лазера и стратегии для алюминия
 - TAB ch3_laser_compare: Сравнение волоконного, диодного и CO₂-лазеров для аддитивных технологий
 - TAB ch1_quantum: Квантовые числа электрона в атоме
-- TAB ch6_na_table: Три случая числовой апертуры: промышленный, лабораторный и экстремальный
+- TAB ch7_na_table: Три случая числовой апертуры: промышленный, лабораторный и экстремальный

@@ -2,7 +2,8 @@
 """
 Сборка печатной методички по курсу.
 Порядок глав: бывшая Лекция 3 → 1; Лекция 1 → 2; Лекция 2 → 3; Лекция 4 → 4;
-интерференция → 5; формирование пятна (бывш. лекция 5) → 6.
+геометрическая оптика → 5; интерференция → 6; формирование пятна → 7.
+
 Текст = раскадровки без спикерских ремарок; со схемами, рисунками и таблицами.
 """
 from __future__ import annotations
@@ -49,9 +50,9 @@ else:
 STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
 # ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
-DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-6.docx"
+DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-7.docx"
 # Копия в корне репозитория (для GitHub / Яндекс Документы)
-REPO_STUDENT_DOCX = OUT_DIR / "Metodichka_lectures_1-6.docx"
+REPO_STUDENT_DOCX = OUT_DIR / "Metodichka_lectures_1-7.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -90,8 +91,35 @@ GLOSSARY_CH4 = [
     "Дальний ИК\tИК-диапазон десятков микрометров (CO₂ ~10,6 мкм); эффективен для многих неметаллов",
 ]
 
-# Дополнение к глоссарию из главы 5 (интерференция света)
+# Дополнение к глоссарию из главы 5 (геометрическая оптика)
 GLOSSARY_CH5 = [
+    "Луч\tИдеализация: линия, вдоль которой переносится энергия света в геометрической оптике",
+    "Геометрическая оптика\tОписание света набором лучей; справедливо при размерах >> длины волны",
+    "Закон отражения\tУгол отражения равен углу падения; лучи и нормаль лежат в одной плоскости",
+    "Закон Снеллиуса\tЗакон преломления: n₁ · sin α = n₂ · sin β",
+    "Показатель преломления n\tОтношение скорости света в вакууме к скорости в среде: n = c/v",
+    "Относительный показатель преломления\tn₂₁ = n₂/n₁ = sin α / sin β",
+    "Полное внутреннее отражение\tОтражение без преломления при α > α_пр на границе n₁ > n₂",
+    "Предельный угол α_пр\tУгол падения, при котором β = 90°; sin α_пр = n₂/n₁",
+    "Световод (волокно)\tКанал передачи света за счёт ПВО на границе сердцевина/оболочка",
+    "Тонкая линза\tМодель линзы, в которой толщиной пренебрегают по сравнению с фокусным расстоянием",
+    "Главная оптическая ось\tПрямая через центры кривизны поверхностей линзы",
+    "Оптический центр O\tТочка линзы, луч через которую не меняет направления",
+    "Фокус F\tТочка схождения лучей, падавших параллельно главной оптической оси",
+    "Фокусное расстояние F\tРасстояние от оптического центра до фокуса",
+    "Оптическая сила D\tD = 1/F; единица — диоптрия (м⁻¹)",
+    "Диоптрия\tЕдиница оптической силы: 1 дптр = 1 м⁻¹",
+    "Формула тонкой линзы\t1/F = 1/d + 1/f (d — до предмета, f — до изображения)",
+    "Линейное увеличение Γ\tΓ = H'/H = −f/d; знак «−» — перевёрнутое действительное изображение",
+    "Действительное изображение\tОбразуется пересечением самих лучей; может быть принято на экране",
+    "Мнимое изображение\tОбразуется пересечением продолжений лучей; на экране не принимается",
+    "Параксиальное приближение\tЛучи близки к оси, углы малы — справедливы формулы тонкой линзы",
+    "Собирающая линза\tПоложительная линза (D > 0), толще в центре",
+    "Рассеивающая линза\tОтрицательная линза (D < 0), толще по краям",
+]
+
+# Дополнение к глоссарию из главы 6 (интерференция света)
+GLOSSARY_CH6 = [
     "Интерференция\tУстойчивое во времени перераспределение интенсивности при наложении когерентных волн",
     "Суперпозиция\tПринцип сложения колебаний: результирующее поле = сумма полей волн в точке",
     "Когерентность\tОдинаковая частота и постоянная разность фаз волн; условие устойчивой интерференционной картины",
@@ -111,8 +139,8 @@ GLOSSARY_CH5 = [
     "Гомодинный сигнал\tИнтерференционный сигнал при одинаковой частоте опорного и измерительного лучей",
 ]
 
-# Дополнение к глоссарию из главы 6 (формирование пятна; бывшая глава 5)
-GLOSSARY_CH6 = [
+# Дополнение к глоссарию из главы 7 (формирование пятна)
+GLOSSARY_CH7 = [
     "I\tПлотность мощности (интенсивность): I = P/S, Вт/см²",
     "P\tМощность лазера, Вт",
     "S\tПлощадь лазерного пятна, см²",
@@ -550,16 +578,17 @@ HANDBOOK_CHAPTER_KEYS = {
     2: "Что такое свет",
     3: "Физические основы работы лазера",
     4: "Свет как поток фотонов",
-    5: "Интерференция света",
-    6: "Формирование лазерного пятна",
+    5: "Геометрическая оптика",
+    6: "Интерференция света",
+    7: "Формирование лазерного пятна",
 }
 
 
 def _handbook_docx_candidates() -> list[Path]:
     return [
         DOCX_PATH,
-        OUT_DIR / "Metodichka_lectures_1-6.docx",
-        OUT_DIR / "Metodichka_lectures_1-5.docx",
+        OUT_DIR / "Metodichka_lectures_1-7.docx",
+        OUT_DIR / "Metodichka_lectures_1-7.docx",
     ]
 
 
@@ -957,7 +986,24 @@ def load_lecture4_sections() -> list[tuple[str, list[str]]]:
 
 
 def load_lecture5_sections() -> list[tuple[str, list[str]]]:
-    """Глава 5: интерференция света — книжный стиль, без спикерских подсказок."""
+    """Глава 5: геометрическая оптика — книжный стиль."""
+    py_path = ROOT / "Lecture-GeometricOptics-main" / "build_lecture_geo.py"
+    script = load_script(py_path)
+    sections = paragraphs_from_script_items(script)
+    adapted = []
+    for title, paras in sections:
+        ap = []
+        for p in paras:
+            p = strip_handbook_glosses(p)
+            if p.strip():
+                ap.append(p)
+        if ap:
+            adapted.append((title, ap))
+    return normalize_sections(adapted)
+
+
+def load_lecture6_sections() -> list[tuple[str, list[str]]]:
+    """Глава 6: интерференция света — книжный стиль, без спикерских подсказок."""
     py_path = ROOT / "Lecture-Interference-main" / "build_lecture.py"
     script = load_script(py_path)
     sections = paragraphs_from_script_items(script)
@@ -968,7 +1014,11 @@ def load_lecture5_sections() -> list[tuple[str, list[str]]]:
             p = strip_handbook_glosses(p)
             p = p.replace(
                 "Сегодняшний семинар продолжает курс по физике лазеров и открывает блок физической оптики.",
+                "Эта глава продолжает блок оптики курса по физике лазеров — от геометрических лучей к волновым явлениям.",
+            )
+            p = p.replace(
                 "Эта глава продолжает курс по физике лазеров и открывает блок физической оптики.",
+                "Эта глава продолжает блок оптики курса по физике лазеров — от геометрических лучей к волновым явлениям.",
             )
             p = p.replace("Тема: интерференция света.", "Тема главы — интерференция света.")
             p = p.replace("Цель занятия —", "Цель главы —")
@@ -1010,6 +1060,7 @@ def load_lecture5_sections() -> list[tuple[str, list[str]]]:
             p = p.replace("В Лекции 2", "В главе 2")
             p = p.replace("В Лекции 3", "В главе 3")
             p = p.replace("В Лекции 4", "В главе 4")
+            p = p.replace("из главы 5", "из главы 6")  # safety no-op mostly
             p = p.replace("10^-8", "10⁻⁸")
             p = p.replace("10^-7", "10⁻⁷")
             p = p.replace("10^-6", "10⁻⁶")
@@ -1022,16 +1073,16 @@ def load_lecture5_sections() -> list[tuple[str, list[str]]]:
     return normalize_sections(adapted)
 
 
-def load_lecture6_sections() -> list[tuple[str, list[str]]]:
-    """Глава 6: формирование пятна — книжный стиль, без спикерских подсказок в скобках."""
+def load_lecture7_sections() -> list[tuple[str, list[str]]]:
+    """Глава 7: формирование пятна — книжный стиль, без спикерских подсказок в скобках."""
     import importlib.util
 
     py_path = ROOT / "Lecture-6-main" / "build_lecture_5.py"
     script = load_script(py_path)
-    spec = importlib.util.spec_from_file_location("bl6", py_path)
-    bl6 = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(bl6)
-    epilogue = getattr(bl6, "EPILOGUE", "")
+    spec = importlib.util.spec_from_file_location("bl7", py_path)
+    bl7 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bl7)
+    epilogue = getattr(bl7, "EPILOGUE", "")
 
     sections = paragraphs_from_script_items(script)
     adapted = []
@@ -1040,9 +1091,11 @@ def load_lecture6_sections() -> list[tuple[str, list[str]]]:
         for p in paras:
             p = strip_handbook_glosses(p)
             p = p.replace("Добрый день. Курс «Физика лазеров для аддитивных технологий» — лекция 5.",
-                          "Курс «Физика лазеров для аддитивных технологий» — глава 6.")
-            p = p.replace("лекция 5", "глава 6")
-            p = p.replace("Лекция 5", "Глава 6")
+                          "Курс «Физика лазеров для аддитивных технологий» — глава 7.")
+            p = p.replace("лекция 5", "глава 7")
+            p = p.replace("Лекция 5", "Глава 7")
+            p = p.replace("глава 6", "глава 7")
+            p = p.replace("Глава 6", "Глава 7")
             p = p.replace("Цепочка до сегодня:", "Цепочка предыдущих глав:")
             p = p.replace("Тема: формирование лазерного пятна",
                           "Тема главы — формирование лазерного пятна")
@@ -1164,22 +1217,30 @@ def attach_media(chapters, catalog):
             (("КРИТЕРИИ", "ВЫБОР ЛАЗЕРА"), ["ch4_choice"]),
         ],
         5: [
-            (("СУПЕРПОЗИЦ", "ОПРЕДЕЛЕНИЕ ИНТЕРФЕРЕНЦ"), ["ch5_superposition"]),
-            (("КОГЕРЕНТНОСТ", "КОГЕРЕНТНОСТЬ"), ["ch5_coherence"]),
-            (("РАЗНОСТЬ ХОДА", "MAX", "MIN"), ["ch5_path_diff"]),
-            (("ОПЫТ ЮНГА", "ЮНГА"), ["ch5_young"]),
-            (("ШИРИНА ПОЛОСЫ", "ΔX", "Δx"), ["ch5_fringes"]),
-            (("ЧИСЛЕННЫЙ", "РАСЧЁТ"), ["ch5_numeric"]),
-            (("SLM", "ВОЛОКОНН", "ЗАЧЕМ ЭТО"), ["ch5_slm_link"]),
+            (("ЗАКОН ОТРАЖ",), ["ch5_reflection"]),
+            (("ПРЕЛОМЛЕН", "СНЕЛЛИУС", "ПОКАЗАТЕЛЬ ПРЕЛОМЛ"), ["ch5_refraction"]),
+            (("ПОЛНОЕ ВНУТРЕНН", "СВЕТОВОД"), ["ch5_tir_fiber"]),
+            (("СФЕРИЧЕСКИЕ ЛИНЗ",), ["ch5_lens_defs"]),
+            (("ПОСТРОЕНИЕ ИЗОБРАЖ",), ["ch5_lens_rays"]),
+            (("ФОРМУЛА ТОНКОЙ", "УВЕЛИЧЕН"), ["ch5_thin_lens"]),
         ],
         6: [
-            (("ОПТИКА", "ПЛОТНОСТЬ", "РАСЧЁТ"), ["ch6_intensity"]),
-            (("ЛУЧИ И ВОЛНЫ", "ДВА ЯЗЫКА"), ["ch6_rays_waves"]),
-            (("РАЗМЕР ПЯТНА", "ФОРМУЛА №1"), ["ch6_spot"]),
-            (("ОПТИЧЕСКИЙ ТРАКТ", "ТРАКТ СЛП"), ["ch6_train"]),
-            (("ГЛУБИНА РЕЗКОСТИ", "ФОРМУЛА №2"), ["ch6_dof", "tab:ch6_na_table"]),
-            (("ФОКУС НА ПРАКТИКЕ", "СМЕЩЕНИЕ", "z-offset", "Z-OFFSET"), ["ch6_focus"]),
-            (("M²", "M2", "КАЧЕСТВО ПУЧКА", "ИТОГ"), ["ch6_m2"]),
+            (("СУПЕРПОЗИЦ", "ОПРЕДЕЛЕНИЕ ИНТЕРФЕРЕНЦ"), ["ch6_superposition"]),
+            (("КОГЕРЕНТНОСТ", "КОГЕРЕНТНОСТЬ"), ["ch6_coherence"]),
+            (("РАЗНОСТЬ ХОДА", "MAX", "MIN"), ["ch6_path_diff"]),
+            (("ОПЫТ ЮНГА", "ЮНГА"), ["ch6_young"]),
+            (("ШИРИНА ПОЛОСЫ", "ΔX", "Δx"), ["ch6_fringes"]),
+            (("ЧИСЛЕННЫЙ", "РАСЧЁТ"), ["ch6_numeric"]),
+            (("SLM", "ВОЛОКОНН", "ЗАЧЕМ ЭТО"), ["ch6_slm_link"]),
+        ],
+        7: [
+            (("ОПТИКА", "ПЛОТНОСТЬ", "РАСЧЁТ"), ["ch7_intensity"]),
+            (("ЛУЧИ И ВОЛНЫ", "ДВА ЯЗЫКА"), ["ch7_rays_waves"]),
+            (("РАЗМЕР ПЯТНА", "ФОРМУЛА №1"), ["ch7_spot"]),
+            (("ОПТИЧЕСКИЙ ТРАКТ", "ТРАКТ СЛП"), ["ch7_train"]),
+            (("ГЛУБИНА РЕЗКОСТИ", "ФОРМУЛА №2"), ["ch7_dof", "tab:ch7_na_table"]),
+            (("ФОКУС НА ПРАКТИКЕ", "СМЕЩЕНИЕ", "z-offset", "Z-OFFSET"), ["ch7_focus"]),
+            (("M²", "M2", "КАЧЕСТВО ПУЧКА", "ИТОГ"), ["ch7_m2"]),
         ],
     }
 
@@ -1236,8 +1297,9 @@ def build_book_model(catalog):
         glossary = load_glossary_from_existing_handbook()
     ch3 = _try_source_or_docx(load_lecture2_sections, "Lecture-2-main/build_lecture_2.py", 3)
     ch4 = _try_source_or_docx(load_lecture4_sections, "Lecture-4-main/build_lecture_4.py", 4)
-    ch5 = _try_source_or_docx(load_lecture5_sections, "Lecture-Interference-main/build_lecture.py", 5)
-    ch6 = _try_source_or_docx(load_lecture6_sections, "Lecture-6-main/build_lecture_5.py", 6)
+    ch5 = _try_source_or_docx(load_lecture5_sections, "Lecture-GeometricOptics-main/build_lecture_geo.py", 5)
+    ch6 = _try_source_or_docx(load_lecture6_sections, "Lecture-Interference-main/build_lecture.py", 6)
+    ch7 = _try_source_or_docx(load_lecture7_sections, "Lecture-6-main/build_lecture_5.py", 7)
 
     chapters = [
         {
@@ -1266,21 +1328,27 @@ def build_book_model(catalog):
         },
         {
             "number": 5,
-            "title": "Интерференция света",
-            "subtitle": "Суперпозиция, когерентность, опыт Юнга, Δx = λL/d и связь с SLM на волоконных лазерах",
+            "title": "Геометрическая оптика",
+            "subtitle": "Лучи, отражение и преломление, полное внутреннее отражение, тонкая линза",
             "sections": ch5,
         },
         {
             "number": 6,
+            "title": "Интерференция света",
+            "subtitle": "Суперпозиция, когерентность, опыт Юнга, Δx = λL/d и связь с SLM на волоконных лазерах",
+            "sections": ch6,
+        },
+        {
+            "number": 7,
             "title": "Формирование лазерного пятна: геометрическая и физическая оптика",
             "subtitle": "I = P/S, дифракция, NA, DOF, оптический тракт СЛП и параметр M²",
-            "sections": ch6,
+            "sections": ch7,
         },
     ]
     rich = attach_media(chapters, catalog)
     # Убираем устаревшую статью «зелёная щель» из глоссария, загруженного из существующего DOCX
     glossary = [g for g in glossary if not g.strip().lower().startswith("«зелёная щель»")]
-    glossary = _merge_glossary(list(glossary), GLOSSARY_CH4 + GLOSSARY_CH5 + GLOSSARY_CH6)
+    glossary = _merge_glossary(list(glossary), GLOSSARY_CH4 + GLOSSARY_CH5 + GLOSSARY_CH6 + GLOSSARY_CH7)
     return rich, list(PREFACE), glossary
 
 
@@ -1696,7 +1764,7 @@ def write_readme(chapters):
         "",
         f"- `{DOCX_PATH.name}`",
         f"- `{PDF_PATH.name}`",
-        f"- `{REPO_STUDENT_DOCX.name}` — Word для Яндекс Документов (главы 1–6, = PDF)",
+        f"- `{REPO_STUDENT_DOCX.name}` — Word для Яндекс Документов (главы 1–7, = PDF)",
         "- `assets/` — рисунки и схемы",
         "",
         "## Главы",
