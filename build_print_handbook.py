@@ -49,10 +49,6 @@ else:
     STUDENT_DIR = OUT_DIR
 STUDENT_PDF_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.pdf"
 STUDENT_DOCX_PATH = STUDENT_DIR / "Методичка_Физика_лазеров_для_3D-технологий.docx"
-# ASCII-имя на Рабочем столе — удобно открывать и копировать в Яндекс Документы
-DESKTOP_STUDENT_DOCX = Path.home() / "Desktop" / "Metodichka_lectures_1-7.docx"
-# Копия в корне репозитория (для GitHub / Яндекс Документы)
-REPO_STUDENT_DOCX = OUT_DIR / "Metodichka_lectures_1-7.docx"
 AUTHOR = "Волков Е.В."
 
 PREFACE = [
@@ -587,8 +583,7 @@ HANDBOOK_CHAPTER_KEYS = {
 def _handbook_docx_candidates() -> list[Path]:
     return [
         DOCX_PATH,
-        OUT_DIR / "Metodichka_lectures_1-7.docx",
-        OUT_DIR / "Metodichka_lectures_1-7.docx",
+        STUDENT_DOCX_PATH,
     ]
 
 
@@ -1760,12 +1755,16 @@ def write_readme(chapters):
     lines = [
         "# Методичка: Физика лазеров для аддитивных (3D) технологий",
         "",
+        "Сборная методичка курса (главы 1–7). Отдельные лекции хранятся в своих репозиториях; "
+        "здесь — объединённый текст, схемы и скрипты пересборки.",
+        "",
         "## Файлы",
         "",
-        f"- `{DOCX_PATH.name}`",
-        f"- `{PDF_PATH.name}`",
-        f"- `{REPO_STUDENT_DOCX.name}` — Word для Яндекс Документов (главы 1–7, = PDF)",
+        f"- `{DOCX_PATH.name}` — Word",
+        f"- `{PDF_PATH.name}` — PDF",
         "- `assets/` — рисунки и схемы",
+        "- `build_print_handbook.py`, `_prepare_assets.py` — пересборка",
+        "- `LICENSE`",
         "",
         "## Главы",
         "",
@@ -1804,15 +1803,6 @@ def main():
         build_pdf(chapters, preface, glossary, STUDENT_PDF_PATH)
     if STUDENT_DOCX_PATH.resolve() != DOCX_PATH.resolve():
         build_docx(chapters, preface, glossary, STUDENT_DOCX_PATH)
-    # Копии с латинским именем — репозиторий и Рабочий стол (тот же текст, что PDF/DOCX)
-    try:
-        import shutil
-        shutil.copy2(STUDENT_DOCX_PATH, REPO_STUDENT_DOCX)
-        shutil.copy2(STUDENT_DOCX_PATH, DESKTOP_STUDENT_DOCX)
-        print(f"OK REPO DOCX: {REPO_STUDENT_DOCX}")
-        print(f"OK DESKTOP DOCX: {DESKTOP_STUDENT_DOCX}")
-    except Exception as e:
-        print(f"WARN student docx copies: {e}")
     write_readme(chapters)
     print("DONE")
 
