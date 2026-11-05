@@ -92,7 +92,7 @@ CH3_LASER_TABLE = {
     ],
 }
 
-CH5_NA_TABLE = {
+CH6_NA_TABLE = {
     "caption": "Три случая числовой апертуры: промышленный, лабораторный и экстремальный",
     "headers": ["Параметр", "A: промышл.", "B: лаб.", "C: экстр."],
     "rows": [
@@ -125,14 +125,22 @@ EXISTING_FIGURES = [
     ("ch4_absorption", "ch4_absorption.png",
      "A(λ) (спектральная поглощательная способность) и четыре сценария: лазер → материал → результат"),
     ("ch4_choice", "ch4_choice.png", "Практические критерии выбора лазера и стратегии для алюминия"),
-    # глава 5 (формирование пятна)
-    ("ch5_intensity", "ch5_intensity.png", "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
-    ("ch5_rays_waves", "ch5_rays_waves.png", "Два языка оптики: геометрические лучи и дифракционное пятно"),
-    ("ch5_spot", "ch5_spot.png", "Дифракционный предел: d ≈ λ/NA"),
-    ("ch5_train", "ch5_train.png", "Оптический тракт СЛП-станка: от волокна до порошка"),
-    ("ch5_dof", "ch5_dof.png", "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
-    ("ch5_focus", "ch5_focus.png", "Положение фокуса относительно слоя порошка и z-offset"),
-    ("ch5_m2", "ch5_m2.png", "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
+    # глава 5 (интерференция света)
+    ("ch5_superposition", "ch5_superposition.png", "Принцип суперпозиции: усиление в фазе и гашение в противофазе"),
+    ("ch5_coherence", "ch5_coherence.png", "Когерентность: две независимые лампы против деления одной волны"),
+    ("ch5_path_diff", "ch5_path_diff.png", "Разность хода и условия максимума/минимума"),
+    ("ch5_young", "ch5_young.png", "Схема опыта Юнга: один источник → две щели → полосы на экране"),
+    ("ch5_fringes", "ch5_fringes.png", "Период интерференционных полос Δx = λL/d"),
+    ("ch5_numeric", "ch5_numeric.png", "Численный пример: расчёт расстояния между полосами"),
+    ("ch5_slm_link", "ch5_slm_link.png", "Интерференция в языке волоконного лазера и SLM"),
+    # глава 6 (формирование пятна)
+    ("ch6_intensity", "ch6_intensity.png", "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
+    ("ch6_rays_waves", "ch6_rays_waves.png", "Два языка оптики: геометрические лучи и дифракционное пятно"),
+    ("ch6_spot", "ch6_spot.png", "Дифракционный предел: d ≈ λ/NA"),
+    ("ch6_train", "ch6_train.png", "Оптический тракт СЛП-станка: от волокна до порошка"),
+    ("ch6_dof", "ch6_dof.png", "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
+    ("ch6_focus", "ch6_focus.png", "Положение фокуса относительно слоя порошка и z-offset"),
+    ("ch6_m2", "ch6_m2.png", "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
 ]
 
 
@@ -226,37 +234,65 @@ def prepare_all() -> dict:
         for key, fn, cap in figs4:
             catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
 
-    # Lecture 5 / Chapter 5 (формирование пятна)
-    l5_py = ROOT / "Lecture-5-main" / "build_lecture_5.py"
-    if l5_py.exists():
-        m5 = _load(l5_py)
-        figs5 = [
-            ("ch5_intensity", m5.draw_intensity_comparison_pil,
+    # Lecture Interference / Chapter 5
+    import shutil
+    lint_py = ROOT / "Lecture-Interference-main" / "build_lecture.py"
+    if lint_py.exists():
+        mint = _load(lint_py)
+        figs_int = [
+            ("ch5_superposition", mint.draw_superposition,
+             "Принцип суперпозиции: усиление в фазе и гашение в противофазе"),
+            ("ch5_coherence", mint.draw_coherence,
+             "Когерентность: две независимые лампы против деления одной волны"),
+            ("ch5_path_diff", mint.draw_path_difference,
+             "Разность хода и условия максимума/минимума"),
+            ("ch5_young", mint.draw_young_scheme,
+             "Схема опыта Юнга: один источник → две щели → полосы на экране"),
+            ("ch5_fringes", mint.draw_fringe_formula,
+             "Период интерференционных полос Δx = λL/d"),
+            ("ch5_numeric", mint.draw_numeric_board,
+             "Численный пример: расчёт расстояния между полосами"),
+            ("ch5_slm_link", mint.draw_slm_link,
+             "Интерференция в языке волоконного лазера и SLM"),
+        ]
+        for key, fn, cap in figs_int:
+            src = Path(fn())
+            dest = ASSETS / f"{key}.png"
+            shutil.copy2(src, dest)
+            catalog["figures"][key] = {"path": dest, "caption": cap}
+            print("fig", dest.name)
+
+    # Lecture 6 / Chapter 6 (формирование пятна; бывшая лекция 5)
+    l6_py = ROOT / "Lecture-6-main" / "build_lecture_5.py"
+    if l6_py.exists():
+        m6 = _load(l6_py)
+        figs6 = [
+            ("ch6_intensity", m6.draw_intensity_comparison_pil,
              "Плотность мощности I = P/S: два сценария при P = 200 Вт"),
-            ("ch5_rays_waves", m5.draw_rays_vs_waves_pil,
+            ("ch6_rays_waves", m6.draw_rays_vs_waves_pil,
              "Два языка оптики: геометрические лучи и дифракционное пятно"),
-            ("ch5_spot", m5.draw_spot_size_pil,
+            ("ch6_spot", m6.draw_spot_size_pil,
              "Дифракционный предел: d ≈ λ/NA"),
-            ("ch5_train", m5.draw_optical_train_pil,
+            ("ch6_train", m6.draw_optical_train_pil,
              "Оптический тракт СЛП-станка: от волокна до порошка"),
-            ("ch5_dof", m5.draw_dof_chart_pil,
+            ("ch6_dof", m6.draw_dof_chart_pil,
              "Компромисс NA: диаметр пятна d и глубина резкости DOF"),
-            ("ch5_focus", m5.draw_focus_practice_pil,
+            ("ch6_focus", m6.draw_focus_practice_pil,
              "Положение фокуса относительно слоя порошка и z-offset"),
-            ("ch5_m2", m5.draw_m2_comparison_pil,
+            ("ch6_m2", m6.draw_m2_comparison_pil,
              "Параметр M² и реальный диаметр пятна d_реал = M²·d_идеал"),
         ]
-        for key, fn, cap in figs5:
+        for key, fn, cap in figs6:
             catalog["figures"][key] = {"path": _save(fn(), f"{key}.png"), "caption": cap}
-        catalog["tables"]["ch5_na_table"] = {
-            "caption": CH5_NA_TABLE["caption"],
-            "headers": list(m5.NA_TABLE["headers"]),
-            "rows": [list(row) for row in m5.NA_TABLE["rows"]],
+        catalog["tables"]["ch6_na_table"] = {
+            "caption": CH6_NA_TABLE["caption"],
+            "headers": list(m6.NA_TABLE["headers"]),
+            "rows": [list(row) for row in m6.NA_TABLE["rows"]],
         }
     else:
-        catalog["tables"]["ch5_na_table"] = dict(CH5_NA_TABLE)
+        catalog["tables"]["ch6_na_table"] = dict(CH6_NA_TABLE)
 
-    # Уже собранные PNG, если исходников лекций 1–5 нет
+    # Уже собранные PNG, если исходников лекций нет
     for key, filename, caption in EXISTING_FIGURES:
         if key not in catalog["figures"]:
             _add_fig(catalog, key, ASSETS / filename, caption)
